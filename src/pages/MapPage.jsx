@@ -22,7 +22,7 @@ export default function MapPage() {
   const [nearestShop, setNearestShop] = useState(null)
 
   useEffect(() => {
-    fetch(`${API_URL}/shops`)
+    fetch(`${API_URL}/shops/`)
       .then(r => r.json())
       .then(setShops)
   }, [])

@@ -19,7 +19,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch(`${API_URL}/shops`)
+    fetch(`${API_URL}/shops/`)
       .then(r => r.json())
       .then(data => { setShops(data); setLoading(false) })
       .catch(() => setLoading(false))
