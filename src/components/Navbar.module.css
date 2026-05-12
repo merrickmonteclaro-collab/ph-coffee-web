@@ -1,0 +1,31 @@
+.nav {
+  background: var(--brown-dark);
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.brand {
+  font-family: 'DM Serif Display', serif;
+  font-size: 20px;
+  color: #fff;
+  font-weight: 400;
+}
+
+.links { display: flex; gap: 8px; }
+
+.link {
+  color: var(--brown-light);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 7px 14px;
+  border-radius: 8px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.link:hover { color: #fff; background: rgba(255,255,255,0.1); }
+.active { color: #fff !important; background: rgba(255,255,255,0.15) !important; }

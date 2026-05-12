@@ -1,0 +1,20 @@
+.page { min-height: calc(100vh - 56px); display: flex; align-items: flex-start; justify-content: center; padding: 40px 24px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 36px; width: 100%; max-width: 560px; }
+.title { font-family: 'DM Serif Display', serif; font-size: 28px; font-weight: 400; margin-bottom: 6px; }
+.sub { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5; }
+.label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 6px; }
+.input { width: 100%; padding: 11px 14px; border: 1px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); background: var(--bg); outline: none; margin-bottom: 16px; transition: border-color 0.2s; }
+.input:focus { border-color: var(--brown-mid); background: #fff; }
+.textarea { resize: vertical; min-height: 100px; }
+.row { display: flex; gap: 14px; }
+.error { background: var(--red-light); color: var(--red); padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; }
+.submitBtn { width: 100%; padding: 13px; background: var(--terracotta); color: #fff; border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: opacity 0.15s; margin-top: 4px; }
+.submitBtn:hover:not(:disabled) { opacity: 0.88; }
+.submitBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+.successPage { min-height: calc(100vh - 56px); display: flex; align-items: center; justify-content: center; padding: 24px; }
+.successCard { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 48px 36px; text-align: center; max-width: 420px; width: 100%; }
+.successIcon { width: 64px; height: 64px; background: var(--green-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; color: var(--green); margin: 0 auto 20px; font-weight: 700; }
+.successTitle { font-family: 'DM Serif Display', serif; font-size: 26px; font-weight: 400; margin-bottom: 8px; }
+.successSub { font-size: 14px; color: var(--text-muted); line-height: 1.5; margin-bottom: 28px; }
+.anotherBtn { border: 1px solid var(--border); background: var(--bg); border-radius: 10px; padding: 11px 22px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; color: var(--text); transition: background 0.15s; }
+.anotherBtn:hover { background: var(--border); }
