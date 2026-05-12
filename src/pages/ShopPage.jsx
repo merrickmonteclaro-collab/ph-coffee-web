@@ -9,7 +9,7 @@ export default function ShopPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch(`${API_URL}/shops/${id}/`)
+    fetch(`${API_URL}/shops/${id}`)
       .then(r => r.json())
       .then(data => { setShop(data); setLoading(false) })
       .catch(() => setLoading(false))
