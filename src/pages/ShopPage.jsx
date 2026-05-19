@@ -64,6 +64,28 @@ export default function ShopPage() {
           </div>
         </div>
 
+         <div className={styles.section}>
+          <div className={styles.sectionTitle}>Parking</div>
+          <div className={styles.amenities}>
+            <div className={styles.amenity + ' ' + (shop.has_car_parking ? styles.yes : styles.no)}>🚗 Car Parking</div>
+            <div className={styles.amenity + ' ' + (shop.has_bike_parking ? styles.yes : styles.no)}>🚲 Bike Parking</div>
+          </div>
+        </div>
+
+        <div className={styles.section}>
+          <div className={styles.sectionTitle}>Payments</div>
+          <div className={styles.amenities}>
+            <div className={styles.amenity + ' ' + (shop.accepts_cards ? styles.yes : styles.no)}>💳 Cards Accepted</div>
+          </div>
+        </div>
+
+        <div className={styles.section}>
+          <div className={styles.sectionTitle}>Comfort Room</div>
+          <div className={styles.amenities}>
+            <div className={styles.amenity + ' ' + (shop.has_toilet_bidet ? styles.yes : styles.no)}>🚿 Toilet Bidet</div>
+          </div>
+        </div>
+
         {mapsUrl && (
           <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className={styles.mapsBtn}>
             Open in Google Maps →

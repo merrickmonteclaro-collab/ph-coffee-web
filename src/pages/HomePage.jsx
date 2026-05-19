@@ -9,6 +9,10 @@ const FILTERS = [
   { key: 'is_pet_friendly', label: '🐾 Pet Friendly' },
   { key: 'has_meals', label: '🍽️ Meals' },
   { key: 'has_pastries', label: '🥐 Pastries' },
+  { key: 'has_car_parking', label: '🚗 Car Parking' },
+  { key: 'has_bike_parking', label: '🚲 Bike Parking' },
+  { key: 'accepts_cards', label: '💳 Cards Accepted' },
+  { key: 'has_toilet_bidet', label: '🚿 Toilet Bidet' },
 ]
 
 export default function HomePage() {
@@ -94,6 +98,10 @@ export default function HomePage() {
                     {shop.is_pet_friendly && <span className={styles.tag}>🐾 Pet</span>}
                     {shop.has_meals && <span className={styles.tag}>🍽️ Meals</span>}
                     {shop.has_pastries && <span className={styles.tag}>🥐 Pastries</span>}
+                    {shop.has_car_parking && <span className={styles.tag}>🚗 Parking</span>}
+                    {shop.has_bike_parking && <span className={styles.tag}>🚲 Bike</span>}
+                    {shop.accepts_cards && <span className={styles.tag}>💳 Cards</span>}
+                    {shop.has_toilet_bidet && <span className={styles.tag}>🚿 Bidet</span>}
                   </div>
                 </div>
               </Link>
