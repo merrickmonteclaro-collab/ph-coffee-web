@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { API_URL } from '../utils/config'
+import { API_URL, GOOGLE_MAPS_KEY } from '../utils/config'
 import styles from './HomePage.module.css'
 
 const FILTERS = [
@@ -15,19 +15,79 @@ const FILTERS = [
   { key: 'has_toilet_bidet', label: '🚿 Toilet Bidet' },
 ]
 
+function getDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371
+  const dLat = (lat2 - lat1) * Math.PI / 180
+  const dLon = (lon2 - lon1) * Math.PI / 180
+  const a = Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) ** 2
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+}
+
 export default function HomePage() {
+  const mapRef = useRef(null)
+  const mapInstanceRef = useRef(null)
   const [shops, setShops] = useState([])
   const [filtered, setFiltered] = useState([])
   const [search, setSearch] = useState('')
   const [activeFilters, setActiveFilters] = useState([])
   const [loading, setLoading] = useState(true)
+  const [location, setLocation] = useState(null)
 
   useEffect(() => {
     fetch(`${API_URL}/shops/`)
       .then(r => r.json())
       .then(data => { setShops(data); setLoading(false) })
       .catch(() => setLoading(false))
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(pos => {
+        setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude })
+      })
+    }
   }, [])
+
+  useEffect(() => {
+    if (!shops.length) return
+    const script = document.createElement('script')
+    script.src = 'https://maps.googleapis.com/maps/api/js?key=' + GOOGLE_MAPS_KEY
+    script.onload = () => initMap()
+    document.head.appendChild(script)
+    return () => { if (document.head.contains(script)) document.head.removeChild(script) }
+  }, [shops])
+
+  useEffect(() => {
+    if (mapInstanceRef.current && location) {
+      mapInstanceRef.current.setCenter(location)
+      mapInstanceRef.current.setZoom(13)
+    }
+  }, [location])
+
+  function initMap() {
+    const center = location || { lat: 14.5995, lng: 120.9842 }
+    const map = new google.maps.Map(mapRef.current, {
+      center,
+      zoom: location ? 13 : 11,
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: false,
+      zoomControl: false,
+    })
+    mapInstanceRef.current = map
+
+    shops.filter(s => s.latitude && s.longitude).forEach(shop => {
+      const marker = new google.maps.Marker({
+        position: { lat: shop.latitude, lng: shop.longitude },
+        map,
+        title: shop.name,
+      })
+      const iw = new google.maps.InfoWindow({
+        content: '<div style="font-family:DM Sans,sans-serif;font-size:13px;font-weight:600;color:#5C3D2E">' + shop.name + '</div>'
+      })
+      marker.addListener('click', () => iw.open(map, marker))
+    })
+  }
 
   useEffect(() => {
     let result = [...shops]
@@ -39,30 +99,43 @@ export default function HomePage() {
         (s.region || '').toLowerCase().includes(q)
       )
     }
-    activeFilters.forEach(f => {
-      result = result.filter(s => s[f] === true)
-    })
+    activeFilters.forEach(f => { result = result.filter(s => s[f] === true) })
+    if (location) {
+      result = result
+        .filter(s => s.latitude && s.longitude)
+        .sort((a, b) =>
+          getDistance(location.lat, location.lng, a.latitude, a.longitude) -
+          getDistance(location.lat, location.lng, b.latitude, b.longitude)
+        )
+    }
     setFiltered(result)
-  }, [shops, search, activeFilters])
+  }, [shops, search, activeFilters, location])
 
   function toggleFilter(key) {
-    setActiveFilters(prev =>
-      prev.includes(key) ? prev.filter(f => f !== key) : [...prev, key]
-    )
+    setActiveFilters(prev => prev.includes(key) ? prev.filter(f => f !== key) : [...prev, key])
+  }
+
+  function formatDistance(shop) {
+    if (!location || !shop.latitude || !shop.longitude) return null
+    const d = getDistance(location.lat, location.lng, shop.latitude, shop.longitude)
+    return d < 1 ? Math.round(d * 1000) + 'm away' : d.toFixed(1) + 'km away'
   }
 
   return (
-    <div className={styles.page}>
-      <div className={styles.hero}>
-        <h1 className={styles.heroTitle}>Specialty Coffee in the Philippines</h1>
-        <p className={styles.heroSub}>Discover the best specialty coffee shops near you</p>
+    <div className={styles.container}>
+      <div ref={mapRef} className={styles.map} />
+
+      <div className={styles.bottomSheet}>
+        <div className={styles.handle} />
+
         <input
           className={styles.search}
-          placeholder="Search by name, city, or region..."
+          placeholder="Search shops..."
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
-        <div className={styles.filters}>
+
+        <div className={styles.filterScroll}>
           {FILTERS.map(f => (
             <button
               key={f.key}
@@ -73,17 +146,15 @@ export default function HomePage() {
             </button>
           ))}
         </div>
-      </div>
 
-      <div className={styles.content}>
-        {loading ? (
-          <div className={styles.loading}>Loading shops...</div>
-        ) : filtered.length === 0 ? (
-          <div className={styles.empty}>No shops match your search.</div>
-        ) : (
-          <div className={styles.grid}>
-            {filtered.map(shop => (
-              <Link to={`/shop/${shop.id}`} key={shop.id} className={styles.card}>
+        <div className={styles.list}>
+          {loading ? (
+            <div className={styles.empty}>Loading shops...</div>
+          ) : filtered.length === 0 ? (
+            <div className={styles.empty}>No shops match your filters.</div>
+          ) : (
+            filtered.map(shop => (
+              <Link to={'/shop/' + shop.id} key={shop.id} className={styles.card}>
                 {shop.photo_url && shop.photo_url !== 'string' ? (
                   <img src={shop.photo_url} alt={shop.name} className={styles.cardImg} />
                 ) : (
@@ -93,21 +164,24 @@ export default function HomePage() {
                   <div className={styles.cardName}>{shop.name}</div>
                   <div className={styles.cardLocation}>{shop.city} · {shop.region}</div>
                   <div className={styles.cardTags}>
-                    {shop.has_wifi && <span className={styles.tag}>📶 WiFi</span>}
-                    {shop.is_work_friendly && <span className={styles.tag}>💻 Work</span>}
-                    {shop.is_pet_friendly && <span className={styles.tag}>🐾 Pet</span>}
-                    {shop.has_meals && <span className={styles.tag}>🍽️ Meals</span>}
-                    {shop.has_pastries && <span className={styles.tag}>🥐 Pastries</span>}
-                    {shop.has_car_parking && <span className={styles.tag}>🚗 Parking</span>}
-                    {shop.has_bike_parking && <span className={styles.tag}>🚲 Bike</span>}
-                    {shop.accepts_cards && <span className={styles.tag}>💳 Cards</span>}
-                    {shop.has_toilet_bidet && <span className={styles.tag}>🚿 Bidet</span>}
+                    {shop.has_wifi && <span className={styles.tag}>📶</span>}
+                    {shop.is_work_friendly && <span className={styles.tag}>💻</span>}
+                    {shop.is_pet_friendly && <span className={styles.tag}>🐾</span>}
+                    {shop.has_meals && <span className={styles.tag}>🍽️</span>}
+                    {shop.has_pastries && <span className={styles.tag}>🥐</span>}
+                    {shop.has_car_parking && <span className={styles.tag}>🚗</span>}
+                    {shop.has_bike_parking && <span className={styles.tag}>🚲</span>}
+                    {shop.accepts_cards && <span className={styles.tag}>💳</span>}
+                    {shop.has_toilet_bidet && <span className={styles.tag}>🚿</span>}
                   </div>
                 </div>
+                {formatDistance(shop) && (
+                  <div className={styles.distance}>{formatDistance(shop)}</div>
+                )}
               </Link>
-            ))}
-          </div>
-        )}
+            ))
+          )}
+        </div>
       </div>
     </div>
   )

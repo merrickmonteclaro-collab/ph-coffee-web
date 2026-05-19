@@ -29,22 +29,15 @@ export default function MapPage() {
 
   useEffect(() => {
     if (!shops.length) return
-
-    // Avoid loading the script twice
-    if (window.google && window.google.maps) {
-      initMap()
-      return
-    }
-
+    if (window.google && window.google.maps) { initMap(); return }
     const script = document.createElement('script')
     script.id = 'google-maps-script'
     script.src = 'https://maps.googleapis.com/maps/api/js?key=' + GOOGLE_MAPS_KEY
     script.onload = () => initMap()
     document.head.appendChild(script)
-
     return () => {
-      const existing = document.getElementById('google-maps-script')
-      if (existing) document.head.removeChild(existing)
+      const el = document.getElementById('google-maps-script')
+      if (el) document.head.removeChild(el)
     }
   }, [shops])
 
@@ -54,128 +47,70 @@ export default function MapPage() {
       zoom: 6,
       mapTypeControl: false,
       streetViewControl: false,
+      fullscreenControl: false,
+      zoomControl: false,
     })
-
     mapInstanceRef.current = map
-
-    shops
-      .filter(s => s.latitude && s.longitude)
-      .forEach(shop => {
-        const marker = new google.maps.Marker({
-          position: { lat: shop.latitude, lng: shop.longitude },
-          map,
-          title: shop.name,
-        })
-
-        const infoWindow = new google.maps.InfoWindow({
-          content:
-            '<div style="font-family:\'DM Sans\',sans-serif;padding:4px;max-width:200px">' +
-            '<div style="font-weight:600;font-size:14px;margin-bottom:4px">' + shop.name + '</div>' +
-            '<div style="font-size:12px;color:#9b8474;margin-bottom:8px">' + shop.city + ' · ' + shop.region + '</div>' +
-            '<a href="/shop/' + shop.id + '" style="font-size:12px;color:#c2714f;font-weight:600">View details →</a>' +
-            '</div>'
-        })
-
-        marker.addListener('click', () => infoWindow.open(map, marker))
+    shops.filter(s => s.latitude && s.longitude).forEach(shop => {
+      const marker = new google.maps.Marker({
+        position: { lat: shop.latitude, lng: shop.longitude },
+        map,
+        title: shop.name,
       })
+      const iw = new google.maps.InfoWindow({
+        content: '<div style="font-family:DM Sans,sans-serif;padding:4px;max-width:180px">' +
+          '<div style="font-weight:600;font-size:13px;color:#5C3D2E;margin-bottom:3px">' + shop.name + '</div>' +
+          '<div style="font-size:11px;color:#9B7B6A;margin-bottom:6px">' + shop.city + ' · ' + shop.region + '</div>' +
+          '<a href="/shop/' + shop.id + '" style="font-size:12px;color:#C8603A;font-weight:600">View details →</a>' +
+          '</div>'
+      })
+      marker.addListener('click', () => iw.open(map, marker))
+    })
   }
 
   function findNearMe() {
     setLocationError('')
     setNearestShop(null)
-
-    if (!navigator.geolocation) {
-      setLocationError('Geolocation is not supported by your browser.')
-      return
-    }
-
+    if (!navigator.geolocation) { setLocationError('Geolocation not supported.'); return }
     setLocating(true)
-
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const { latitude, longitude } = pos.coords
-        const map = mapInstanceRef.current
-        if (!map) return
-
-        // Remove old user marker
-        if (userMarkerRef.current) userMarkerRef.current.setMap(null)
-
-        // Add blue dot for user location
-        userMarkerRef.current = new google.maps.Marker({
-          position: { lat: latitude, lng: longitude },
-          map,
-          title: 'Your location',
-          icon: {
-            path: google.maps.SymbolPath.CIRCLE,
-            scale: 10,
-            fillColor: '#4A90D9',
-            fillOpacity: 1,
-            strokeColor: '#fff',
-            strokeWeight: 2,
-          },
-          zIndex: 999,
-        })
-
-        // Center and zoom map to user location
-        map.setCenter({ lat: latitude, lng: longitude })
-        map.setZoom(13)
-
-        // Find nearest shop
-        const pinned = shops.filter(s => s.latitude && s.longitude)
-        if (pinned.length > 0) {
-          const sorted = [...pinned].sort((a, b) =>
-            getDistance(latitude, longitude, a.latitude, a.longitude) -
-            getDistance(latitude, longitude, b.latitude, b.longitude)
-          )
-          const nearest = sorted[0]
-          const dist = getDistance(latitude, longitude, nearest.latitude, nearest.longitude)
-          setNearestShop({
-            name: nearest.name,
-            city: nearest.city,
-            dist: dist < 1 ? Math.round(dist * 1000) + 'm' : dist.toFixed(1) + 'km'
-          })
-        }
-
-        setLocating(false)
-      },
-      (err) => {
-        setLocating(false)
-        if (err.code === 1) {
-          setLocationError('Location access denied. Please allow location in your browser settings.')
-        } else {
-          setLocationError('Could not get your location. Please try again.')
-        }
-      },
-      { enableHighAccuracy: true, timeout: 10000 }
-    )
+    navigator.geolocation.getCurrentPosition(pos => {
+      const { latitude, longitude } = pos.coords
+      const map = mapInstanceRef.current
+      if (!map) return
+      if (userMarkerRef.current) userMarkerRef.current.setMap(null)
+      userMarkerRef.current = new google.maps.Marker({
+        position: { lat: latitude, lng: longitude },
+        map,
+        title: 'Your location',
+        icon: { path: google.maps.SymbolPath.CIRCLE, scale: 10, fillColor: '#C8603A', fillOpacity: 1, strokeColor: '#fff', strokeWeight: 2 },
+        zIndex: 999,
+      })
+      map.setCenter({ lat: latitude, lng: longitude })
+      map.setZoom(13)
+      const pinned = shops.filter(s => s.latitude && s.longitude)
+      if (pinned.length > 0) {
+        const sorted = [...pinned].sort((a, b) =>
+          getDistance(latitude, longitude, a.latitude, a.longitude) -
+          getDistance(latitude, longitude, b.latitude, b.longitude)
+        )
+        const nearest = sorted[0]
+        const dist = getDistance(latitude, longitude, nearest.latitude, nearest.longitude)
+        setNearestShop({ name: nearest.name, dist: dist < 1 ? Math.round(dist * 1000) + 'm' : dist.toFixed(1) + 'km' })
+      }
+      setLocating(false)
+    }, () => { setLocating(false); setLocationError('Could not get your location.') }, { enableHighAccuracy: true, timeout: 10000 })
   }
-
-  const pinnedCount = shops.filter(s => s.latitude && s.longitude).length
 
   return (
     <div className={styles.page}>
-      <div className={styles.header}>
-        <div>
-          <h2 className={styles.title}>Shop Map</h2>
-          <p className={styles.sub}>{pinnedCount} shops pinned</p>
-        </div>
-        <div className={styles.headerRight}>
-          {nearestShop && (
-            <div className={styles.nearestBadge}>
-              📍 Nearest: <strong>{nearestShop.name}</strong> · {nearestShop.dist}
-            </div>
-          )}
-          {locationError && (
-            <div className={styles.locationError}>{locationError}</div>
-          )}
-          <button
-            className={styles.locateBtn}
-            onClick={findNearMe}
-            disabled={locating}
-          >
-            {locating ? 'Locating...' : '📡 Find shops near me'}
-          </button>
-        </div>
+      <div className={styles.overlay}>
+        {nearestShop && (
+          <div className={styles.nearestBadge}>📍 Nearest: <strong>{nearestShop.name}</strong> · {nearestShop.dist}</div>
+        )}
+        {locationError && <div className={styles.error}>{locationError}</div>}
+        <button className={styles.locateBtn} onClick={findNearMe} disabled={locating}>
+          {locating ? 'Locating...' : '📡 Find shops near me'}
+        </button>
       </div>
       <div ref={mapRef} className={styles.map} />
     </div>

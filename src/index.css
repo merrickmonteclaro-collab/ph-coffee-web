@@ -1,21 +1,22 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
 
 :root {
-  --bg: #f5f0eb;
-  --surface: #fff;
-  --border: #e0d6cc;
-  --brown-dark: #3b2a1a;
-  --brown-mid: #7a5c3e;
-  --brown-light: #d4b896;
-  --terracotta: #c2714f;
-  --terracotta-light: #f5e6df;
-  --green: #2d6a4f;
-  --green-light: #d8f3dc;
-  --red: #c1121f;
-  --red-light: #ffe5e5;
-  --text: #3b2a1a;
-  --text-muted: #9b8474;
-  --white: #fff;
+  --bg: #F2E8DC;
+  --bg-card: #FDFAF6;
+  --bg-sand: #E8D8C4;
+  --terracotta: #C8603A;
+  --terracotta-light: #E8916A;
+  --terracotta-dark: #8B2500;
+  --brown: #5C3D2E;
+  --brown-muted: #9B7B6A;
+  --olive: #4A7C59;
+  --olive-light: #D4E6D0;
+  --olive-dark: #2D5A3D;
+  --border: #E8D8C4;
+  --white: #FDFAF6;
+  --error-bg: #FDECEA;
+  --error-text: #8B2500;
+  --tab-height: 64px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -23,8 +24,16 @@
 body {
   font-family: 'DM Sans', sans-serif;
   background: var(--bg);
-  color: var(--text);
+  color: var(--brown);
   min-height: 100vh;
+  max-width: 430px;
+  margin: 0 auto;
+  position: relative;
 }
 
 a { text-decoration: none; color: inherit; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
