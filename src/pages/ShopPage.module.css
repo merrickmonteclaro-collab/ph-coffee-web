@@ -19,3 +19,13 @@
 .amenityLabel { font-size: 13px; color: var(--brown); }
 .mapsBtn { display: inline-block; margin-top: 8px; background: var(--terracotta); color: #fff; padding: 12px 22px; border-radius: 12px; font-size: 14px; font-weight: 600; }
 .mapsBtn:hover { opacity: 0.88; }
+.hoursHeader { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.openBadge { border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 700; }
+.openBadgeOpen { background: var(--olive-light); color: var(--olive-dark); }
+.openBadgeClosed { background: var(--error-bg); color: var(--error-text); }
+.hoursRow { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); }
+.hoursRowToday { background: var(--bg-sand); border-radius: 8px; padding: 6px 8px; border-bottom: none; }
+.hoursDay { font-size: 13px; color: var(--brown-muted); font-weight: 500; width: 40px; }
+.hoursDayToday { color: var(--terracotta); font-weight: 700; }
+.hoursTime { font-size: 13px; color: var(--brown); }
+.hoursTimeToday { color: var(--terracotta); font-weight: 600; }

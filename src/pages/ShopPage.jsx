@@ -27,6 +27,39 @@ export default function ShopPage() {
     ? 'https://www.google.com/maps/search/?api=1&query=' + shop.latitude + ',' + shop.longitude
     : null
 
+  const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+
+  function getOpenStatus() {
+    if (!shop.operating_hours) return null
+    try {
+      const hours = JSON.parse(shop.operating_hours)
+      const now = new Date()
+      const phTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Manila' }))
+      const dayIndex = phTime.getDay()
+      const dayMap = [6, 0, 1, 2, 3, 4, 5]
+      const today = DAYS[dayMap[dayIndex]]
+      const todayHours = hours[today]
+      if (!todayHours || todayHours.closed) return { isOpen: false, today, hours: todayHours }
+      const [openH, openM] = todayHours.open.split(':').map(Number)
+      const [closeH, closeM] = todayHours.close.split(':').map(Number)
+      const currentMins = phTime.getHours() * 60 + phTime.getMinutes()
+      const openMins = openH * 60 + openM
+      const closeMins = closeH * 60 + closeM
+      return { isOpen: currentMins >= openMins && currentMins < closeMins, today, hours: todayHours }
+    } catch { return null }
+  }
+
+  function formatTime(time) {
+    if (!time) return ''
+    const [h, m] = time.split(':').map(Number)
+    const ampm = h >= 12 ? 'PM' : 'AM'
+    const hour = h % 12 || 12
+    return hour + ':' + m.toString().padStart(2, '0') + ' ' + ampm
+  }
+
+  const openStatus = getOpenStatus()
+  const parsedHours = shop.operating_hours ? (() => { try { return JSON.parse(shop.operating_hours) } catch { return null } })() : null
+  
   const amenities = [
     { label: 'WiFi', value: shop.has_wifi },
     { label: 'Work Friendly', value: shop.is_work_friendly },
@@ -73,6 +106,32 @@ export default function ShopPage() {
         <h1 className={styles.name}>{shop.name}</h1>
         <p className={styles.address}>📍 {shop.address}</p>
         <p className={styles.cityRegion}>{shop.city} · {shop.region}</p>
+
+        {parsedHours && (
+          <div className={styles.section}>
+            <div className={styles.hoursHeader}>
+              <div className={styles.sectionTitle}>🕐 Operating Hours</div>
+              {openStatus && (
+                <div className={styles.openBadge + ' ' + (openStatus.isOpen ? styles.openBadgeOpen : styles.openBadgeClosed)}>
+                  {openStatus.isOpen ? '● Open Now' : '● Closed'}
+                </div>
+              )}
+            </div>
+            {DAYS.map(day => {
+              const d = parsedHours[day]
+              if (!d) return null
+              const isToday = openStatus?.today === day
+              return (
+                <div key={day} className={styles.hoursRow + ' ' + (isToday ? styles.hoursRowToday : '')}>
+                  <span className={styles.hoursDay + ' ' + (isToday ? styles.hoursDayToday : '')}>{day}</span>
+                  <span className={styles.hoursTime + ' ' + (isToday ? styles.hoursTimeToday : '')}>
+                    {d.closed ? 'Closed' : formatTime(d.open) + ' – ' + formatTime(d.close)}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        )}
 
         {offerings.length > 0 && (
           <div className={styles.section}>
