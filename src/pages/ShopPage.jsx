@@ -30,23 +30,30 @@ export default function ShopPage() {
   const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
   function getOpenStatus() {
-    if (!shop.operating_hours) return null
+    if (!shop.operating_hours) return null;
     try {
-      const hours = JSON.parse(shop.operating_hours)
-      const now = new Date()
-      const phTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Manila' }))
-      const dayIndex = phTime.getDay()
-      const dayMap = [6, 0, 1, 2, 3, 4, 5]
-      const today = DAYS[dayMap[dayIndex]]
-      const todayHours = hours[today]
-      if (!todayHours || todayHours.closed) return { isOpen: false, today, hours: todayHours }
-      const [openH, openM] = todayHours.open.split(':').map(Number)
-      const [closeH, closeM] = todayHours.close.split(':').map(Number)
-      const currentMins = phTime.getHours() * 60 + phTime.getMinutes()
-      const openMins = openH * 60 + openM
-      const closeMins = closeH * 60 + closeM
-      return { isOpen: currentMins >= openMins && currentMins < closeMins, today, hours: todayHours }
-    } catch { return null }
+      const hours = JSON.parse(shop.operating_hours);
+      // Get Philippine time directly using UTC offset +8
+      const now = new Date();
+      const phOffset = 8 * 60; // PH is UTC+8
+      const utcMins = now.getUTCHours() * 60 + now.getUTCMinutes();
+      const phTotalMins = utcMins + phOffset;
+      const phHours = Math.floor(phTotalMins / 60) % 24;
+      const phMinutes = phTotalMins % 60;
+      // Get PH day of week
+      const utcDay = now.getUTCDay();
+      const phDay = phTotalMins >= 24 * 60 ? (utcDay + 1) % 7 : utcDay;
+      const dayMap = [6, 0, 1, 2, 3, 4, 5]; // Sun=0→6, Mon=1→0...
+      const today = DAYS[dayMap[phDay]];
+      const todayHours = hours[today];
+      if (!todayHours || todayHours.closed) return { isOpen: false, today, hours: todayHours };
+      const [openH, openM] = todayHours.open.split(':').map(Number);
+      const [closeH, closeM] = todayHours.close.split(':').map(Number);
+      const currentMins = phHours * 60 + phMinutes;
+      const openMins = openH * 60 + openM;
+      const closeMins = closeH * 60 + closeM;
+      return { isOpen: currentMins >= openMins && currentMins < closeMins, today, hours: todayHours };
+    } catch { return null; }
   }
 
   function formatTime(time) {
