@@ -1,21 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
 
 :root {
-  --bg: #F2E8DC;
-  --bg-card: #FDFAF6;
-  --bg-sand: #E8D8C4;
-  --terracotta: #C8603A;
-  --terracotta-light: #E8916A;
-  --terracotta-dark: #8B2500;
-  --brown: #5C3D2E;
-  --brown-muted: #9B7B6A;
-  --olive: #4A7C59;
-  --olive-light: #D4E6D0;
-  --olive-dark: #2D5A3D;
-  --border: #E8D8C4;
-  --white: #FDFAF6;
-  --error-bg: #FDECEA;
-  --error-text: #8B2500;
+  --bg: #FFEEBC;
+  --bg-card: #FFF8E7;
+  --bg-sand: #F5E8C0;
+  --terracotta: #542916;
+  --terracotta-light: #88b8ce;
+  --terracotta-dark: #3a1a0a;
+  --brown: #542916;
+  --brown-muted: #88b8ce;
+  --olive: #542916;
+  --olive-light: #FFEEBC;
+  --olive-dark: #3a1a0a;
+  --border: #F5E8C0;
+  --white: #FFEEBC;
+  --error-bg: #FFF0F0;
+  --error-text: #542916;
   --tab-height: 64px;
 }
 
