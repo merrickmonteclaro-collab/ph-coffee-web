@@ -6,7 +6,7 @@
   width: 100%;
   max-width: 430px;
   height: var(--tab-height);
-  background: var(--white);
+  background: var(--bg-card);
   border-top: 1px solid var(--border);
   display: flex;
   align-items: center;
@@ -14,7 +14,6 @@
   z-index: 100;
   padding-bottom: env(safe-area-inset-bottom);
 }
-
 .tab {
   display: flex;
   flex-direction: column;
@@ -22,12 +21,10 @@
   gap: 3px;
   flex: 1;
   padding: 8px 0;
-  color: var(--brown-muted);
+  color: #88b8ce;
   transition: color 0.15s;
 }
-
 .tab:hover { color: var(--terracotta); }
 .active { color: var(--terracotta) !important; }
-
 .icon { font-size: 22px; line-height: 1; }
 .label { font-size: 10px; font-weight: 600; letter-spacing: 0.3px; }

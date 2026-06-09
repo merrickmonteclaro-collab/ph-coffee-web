@@ -67,23 +67,18 @@ export default function HomePage() {
   function initMap() {
     const center = location || { lat: 14.5995, lng: 120.9842 }
     const map = new google.maps.Map(mapRef.current, {
-      center,
-      zoom: location ? 13 : 11,
-      mapTypeControl: false,
-      streetViewControl: false,
-      fullscreenControl: false,
-      zoomControl: false,
+      center, zoom: location ? 13 : 11,
+      mapTypeControl: false, streetViewControl: false,
+      fullscreenControl: false, zoomControl: false,
     })
     mapInstanceRef.current = map
-
     shops.filter(s => s.latitude && s.longitude).forEach(shop => {
       const marker = new google.maps.Marker({
         position: { lat: shop.latitude, lng: shop.longitude },
-        map,
-        title: shop.name,
+        map, title: shop.name,
       })
       const iw = new google.maps.InfoWindow({
-        content: '<div style="font-family:DM Sans,sans-serif;font-size:13px;font-weight:600;color:#5C3D2E">' + shop.name + '</div>'
+        content: '<div style="font-family:Caveat,cursive;font-size:16px;font-weight:600;color:#542916">' + shop.name + '</div>'
       })
       marker.addListener('click', () => iw.open(map, marker))
     })
@@ -128,6 +123,14 @@ export default function HomePage() {
       <div className={styles.bottomSheet}>
         <div className={styles.handle} />
 
+        {/* Brewpack header */}
+        <div className={styles.brandRow}>
+          <div>
+            <div className={styles.brandName}>Brewpack</div>
+            <div className={styles.brandTagline}>find. sip. explore.</div>
+          </div>
+        </div>
+
         <input
           className={styles.search}
           placeholder="Search shops..."
@@ -146,6 +149,8 @@ export default function HomePage() {
             </button>
           ))}
         </div>
+
+        <div className={styles.sectionLabel}>NEARBY SHOPS</div>
 
         <div className={styles.list}>
           {loading ? (

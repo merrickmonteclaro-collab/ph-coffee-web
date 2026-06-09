@@ -4,12 +4,10 @@
   flex-direction: column;
   overflow: hidden;
 }
-
 .map {
   height: 45%;
   flex-shrink: 0;
 }
-
 .bottomSheet {
   flex: 1;
   background: var(--bg);
@@ -21,102 +19,116 @@
   flex-direction: column;
   overflow: hidden;
 }
-
 .handle {
   width: 36px;
   height: 3px;
   background: var(--bg-sand);
   border-radius: 2px;
   align-self: center;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+.brandRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 12px;
   flex-shrink: 0;
 }
-
+.brandName {
+  font-family: 'Caveat', cursive;
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--terracotta);
+  line-height: 1;
+}
+.brandTagline {
+  font-size: 11px;
+  color: #88b8ce;
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
 .search {
   width: 100%;
-  background: var(--white);
+  background: var(--bg-card);
   border-radius: 10px;
   padding: 10px 14px;
   font-size: 14px;
   color: var(--brown);
   border: 1px solid var(--border);
   outline: none;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   font-family: 'DM Sans', sans-serif;
   flex-shrink: 0;
 }
-
 .search::placeholder { color: var(--brown-muted); }
-
 .filterScroll {
   display: flex;
   gap: 8px;
   overflow-x: auto;
-  padding-bottom: 12px;
+  padding-bottom: 10px;
   flex-shrink: 0;
   scrollbar-width: none;
 }
-
 .filterScroll::-webkit-scrollbar { display: none; }
-
 .chip {
   white-space: nowrap;
   padding: 6px 14px;
   border-radius: 20px;
-  border: 1px solid var(--border);
-  background: var(--white);
-  color: var(--brown);
+  border: 1px solid #88b8ce;
+  background: #88b8ce;
+  color: #FFEEBC;
   font-family: 'DM Sans', sans-serif;
   font-size: 13px;
   cursor: pointer;
   transition: all 0.15s;
   flex-shrink: 0;
 }
-
 .chipActive {
   background: var(--terracotta);
   border-color: var(--terracotta);
-  color: #fff;
+  color: #FFEEBC;
 }
-
+.sectionLabel {
+  font-size: 10px;
+  color: #88b8ce;
+  letter-spacing: 1px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
 .list {
   flex: 1;
   overflow-y: auto;
   padding-bottom: 8px;
 }
-
 .empty {
   text-align: center;
   color: var(--brown-muted);
   padding: 40px 0;
   font-size: 14px;
 }
-
 .card {
   display: flex;
   align-items: center;
-  background: var(--white);
+  background: var(--bg-card);
   border-radius: 12px;
-  padding: 14px;
   margin-bottom: 10px;
   border: 1px solid var(--border);
-  gap: 12px;
+  overflow: hidden;
+  gap: 0;
+  transition: box-shadow 0.15s;
 }
-
-.card:hover { box-shadow: 0 2px 8px rgba(92,61,46,0.1); }
-
+.card:hover { box-shadow: 0 2px 8px rgba(84,41,22,0.1); }
 .cardImg {
-  width: 64px;
-  height: 64px;
-  border-radius: 10px;
+  width: 72px;
+  height: 76px;
   object-fit: cover;
   flex-shrink: 0;
 }
-
 .cardImgPlaceholder {
-  width: 64px;
-  height: 64px;
-  border-radius: 10px;
+  width: 72px;
+  height: 76px;
   background: var(--bg-sand);
   display: flex;
   align-items: center;
@@ -124,10 +136,33 @@
   font-size: 24px;
   flex-shrink: 0;
 }
-
-.cardBody { flex: 1; min-width: 0; }
-.cardName { font-size: 15px; font-weight: 600; color: var(--brown); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.cardLocation { font-size: 12px; color: var(--brown-muted); margin-bottom: 6px; }
-.cardTags { display: flex; gap: 6px; flex-wrap: wrap; }
-.tag { font-size: 14px; }
-.distance { font-size: 12px; color: var(--terracotta); font-weight: 600; white-space: nowrap; flex-shrink: 0; }
+.cardBody {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+}
+.cardName {
+  font-family: 'Caveat', cursive;
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--brown);
+  margin-bottom: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cardLocation {
+  font-size: 11px;
+  color: #88b8ce;
+  margin-bottom: 5px;
+}
+.cardTags { display: flex; gap: 5px; flex-wrap: wrap; }
+.tag { font-size: 13px; }
+.distance {
+  font-size: 11px;
+  color: var(--terracotta);
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding-right: 12px;
+}

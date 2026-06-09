@@ -2,14 +2,14 @@ import { Link, useLocation } from 'react-router-dom'
 import styles from './TabBar.module.css'
 
 const TABS = [
-  { path: '/', label: 'Home', icon: '☕' },
-  { path: '/map', label: 'Map', icon: '🗺️' },
+  { path: '/', label: 'Home', icon: '🗺️' },
+  { path: '/map', label: 'Map', icon: '📍' },
+  { path: '/favorites', label: 'Favorites', icon: '🤍' },
   { path: '/suggest', label: 'Suggest', icon: '💡' },
 ]
 
 export default function TabBar() {
   const { pathname } = useLocation()
-
   return (
     <nav className={styles.tabBar}>
       {TABS.map(tab => (

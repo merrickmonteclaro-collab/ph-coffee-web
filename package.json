@@ -10,7 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@expo-google-fonts/caveat": "^0.4.2",
     "@googlemaps/react-wrapper": "^1.2.0",
+    "expo-font": "^56.0.5",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-router-dom": "^7.15.0"
