@@ -38,7 +38,7 @@
 .brandName {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-size: 30px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--terracotta);
   line-height: 1;
 }
@@ -143,8 +143,8 @@
 }
 .cardName {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-size: 19px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
   color: var(--brown);
   margin-bottom: 1px;
   white-space: nowrap;
