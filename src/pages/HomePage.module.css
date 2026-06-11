@@ -36,7 +36,7 @@
   flex-shrink: 0;
 }
 .brandName {
-  font-family: 'Caveat', cursive;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-size: 30px;
   font-weight: 600;
   color: var(--terracotta);
@@ -142,7 +142,7 @@
   padding: 10px 12px;
 }
 .cardName {
-  font-family: 'Caveat', cursive;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-size: 19px;
   font-weight: 600;
   color: var(--brown);

@@ -78,7 +78,7 @@ export default function HomePage() {
         map, title: shop.name,
       })
       const iw = new google.maps.InfoWindow({
-        content: '<div style="font-family:Caveat,cursive;font-size:16px;font-weight:600;color:#542916">' + shop.name + '</div>'
+        content: '<div style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:16px;font-weight:600;color:#542916">' + shop.name + '</div>'
       })
       marker.addListener('click', () => iw.open(map, marker))
     })
