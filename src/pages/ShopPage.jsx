@@ -114,6 +114,17 @@ export default function ShopPage() {
         <p className={styles.address}>📍 {shop.address}</p>
         <p className={styles.cityRegion}>{shop.city} · {shop.region}</p>
 
+        {(shop.facebook_url || shop.instagram_url) && (
+          <div className={styles.socialRow}>
+            {shop.facebook_url && (
+              <a href={shop.facebook_url} target="_blank" rel="noopener noreferrer" className={styles.socialBtn}>📘 Facebook</a>
+            )}
+            {shop.instagram_url && (
+              <a href={shop.instagram_url} target="_blank" rel="noopener noreferrer" className={styles.socialBtn}>📷 Instagram</a>
+            )}
+          </div>
+        )}
+
         {parsedHours && (
           <div className={styles.section}>
             <div className={styles.hoursHeader}>

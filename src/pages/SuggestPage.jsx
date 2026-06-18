@@ -3,7 +3,7 @@ import { API_URL } from '../utils/config'
 import styles from './SuggestPage.module.css'
 
 export default function SuggestPage() {
-  const [form, setForm] = useState({ shop_name: '', address: '', city: '', region: '', notes: '' })
+  const [form, setForm] = useState({ shop_name: '', address: '', city: '', region: '', notes: '', facebook_url: '', instagram_url: '' })
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState('')
@@ -24,11 +24,13 @@ export default function SuggestPage() {
           city: form.city.trim() || null,
           region: form.region.trim() || null,
           notes: form.notes.trim() || null,
+          facebook_url: form.facebook_url.trim() || null,
+          instagram_url: form.instagram_url.trim() || null,
         })
       })
       if (!res.ok) throw new Error()
       setSuccess(true)
-      setForm({ shop_name: '', address: '', city: '', region: '', notes: '' })
+      setForm({ shop_name: '', address: '', city: '', region: '', notes: '', facebook_url: '', instagram_url: '' })
     } catch { setError('Something went wrong. Please try again.') }
     setLoading(false)
   }
@@ -71,6 +73,12 @@ export default function SuggestPage() {
 
         <label className={styles.label}>Why should we add it?</label>
         <textarea className={styles.input + ' ' + styles.textarea} name="notes" value={form.notes} onChange={handleChange} placeholder="Tell us what makes this shop special..." rows={4} />
+
+        <label className={styles.label}>Facebook Page (optional)</label>
+        <input className={styles.input} name="facebook_url" value={form.facebook_url} onChange={handleChange} placeholder="https://facebook.com/theshop" />
+
+        <label className={styles.label}>Instagram Profile (optional)</label>
+        <input className={styles.input} name="instagram_url" value={form.instagram_url} onChange={handleChange} placeholder="https://instagram.com/theshop" />
 
         <button className={styles.submitBtn} type="submit" disabled={loading}>
           {loading ? 'Submitting...' : 'Submit Suggestion'}
