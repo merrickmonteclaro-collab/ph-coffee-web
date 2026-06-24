@@ -1,0 +1,31 @@
+.page { min-height: calc(100vh - var(--tab-height)); background: var(--bg); }
+.loading { display: flex; align-items: center; justify-content: center; min-height: 200px; color: var(--brown-muted); }
+
+.header { background: var(--terracotta); padding: 48px 20px 16px; }
+.backBtn { background: none; border: none; color: var(--white); font-size: 14px; cursor: pointer; opacity: 0.85; margin-bottom: 8px; display: block; font-family: 'DM Sans', sans-serif; }
+.headerTitle { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 24px; font-weight: 700; color: var(--white); margin: 0; }
+
+.content { padding: 20px; max-width: 480px; margin: 0 auto; }
+
+.avatarRow { display: flex; align-items: center; gap: 14px; margin: 20px 0 24px; }
+.avatar { width: 64px; height: 64px; border-radius: 50%; background: var(--terracotta); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.avatarText { color: var(--white); font-size: 28px; font-weight: 700; }
+.displayName { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 700; color: var(--brown); }
+.joinDate { font-size: 12px; color: var(--brown-muted); margin-top: 2px; }
+
+.label { font-size: 11px; font-weight: 600; color: #88b8ce; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; margin-top: 16px; }
+.displayBox { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; font-size: 15px; color: var(--brown); }
+.input { width: 100%; background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; font-size: 15px; color: var(--brown); font-family: 'DM Sans', sans-serif; outline: none; box-sizing: border-box; }
+.input:focus { border-color: var(--terracotta); }
+
+.btnRow { display: flex; gap: 10px; margin-top: 20px; }
+.btnPrimary { flex: 1; background: var(--terracotta); color: var(--white); border: none; border-radius: 10px; padding: 14px; font-size: 15px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; width: 100%; transition: opacity 0.15s; }
+.btnPrimary:hover:not(:disabled) { opacity: 0.88; }
+.btnPrimary:disabled { opacity: 0.5; cursor: not-allowed; }
+.btnSecondary { flex: 1; background: var(--bg-card); color: var(--brown); border: 1px solid var(--border); border-radius: 10px; padding: 14px; font-size: 15px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+
+.logoutBtn { width: 100%; background: none; border: 1px solid var(--error-text); color: var(--error-text); border-radius: 10px; padding: 14px; font-size: 15px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; margin-top: 16px; transition: background 0.15s; }
+.logoutBtn:hover { background: var(--error-bg); }
+
+.error { background: var(--error-bg); color: var(--error-text); border-radius: 8px; padding: 10px 14px; font-size: 13px; margin-bottom: 12px; }
+.successMsg { background: #d8f3dc; color: #2d6a4f; border-radius: 8px; padding: 10px 14px; font-size: 13px; margin-bottom: 12px; }

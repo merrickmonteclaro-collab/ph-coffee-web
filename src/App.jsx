@@ -4,6 +4,8 @@ import HomePage from './pages/HomePage'
 import ShopPage from './pages/ShopPage'
 import MapPage from './pages/MapPage'
 import SuggestPage from './pages/SuggestPage'
+import AuthPage from './pages/AuthPage'
+import AccountPage from './pages/AccountPage'
 
 export default function App() {
   return (
@@ -13,6 +15,8 @@ export default function App() {
         <Route path="/shop/:id" element={<ShopPage />} />
         <Route path="/map" element={<MapPage />} />
         <Route path="/suggest" element={<SuggestPage />} />
+        <Route path="/auth" element={<AuthPage />} />
+        <Route path="/account" element={<AccountPage />} />
       </Routes>
       <TabBar />
     </div>

@@ -1,0 +1,89 @@
+.page {
+  min-height: calc(100vh - var(--tab-height));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: var(--bg);
+}
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px 24px;
+  width: 100%;
+  max-width: 380px;
+}
+.title {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--terracotta);
+  text-align: center;
+  margin-bottom: 4px;
+}
+.subtitle {
+  font-size: 14px;
+  color: var(--brown-muted);
+  text-align: center;
+  margin-bottom: 24px;
+}
+.label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #88b8ce;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  margin-top: 14px;
+}
+.input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 14px;
+  color: var(--brown);
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+  box-sizing: border-box;
+}
+.input:focus { border-color: var(--terracotta); }
+.btn {
+  width: 100%;
+  background: var(--terracotta);
+  color: var(--white);
+  border: none;
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: opacity 0.15s;
+}
+.btn:hover:not(:disabled) { opacity: 0.88; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.toggle {
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--terracotta);
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  margin-top: 16px;
+  text-align: center;
+}
+.error {
+  background: var(--error-bg);
+  color: var(--error-text);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
