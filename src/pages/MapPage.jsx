@@ -47,25 +47,31 @@ export default function MapPage() {
       const el = document.getElementById('google-maps-script')
       if (el) document.head.removeChild(el)
     }
-  }, [shops])
+  }, [shops, visitedShopIds])
 
   function getBeanIcon(visited) {
-    const fill = visited ? '%237a3a1a' : '%237ab648'
-    const stroke = visited ? '%232a1008' : '%233a6820'
-    const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 100 100">' +
-      '<path d="M50 8 C28 8 12 24 12 50 C12 76 28 92 50 92 C72 92 88 76 88 50 C88 24 72 8 50 8 Z" fill="' + fill + '" stroke="' + stroke + '" stroke-width="5"/>' +
-      '<path d="M50 10 C44 20 36 28 36 40 C36 52 56 58 56 70 C56 82 50 88 50 90" fill="none" stroke="' + stroke + '" stroke-width="6" stroke-linecap="round"/>' +
-      '<path d="M50 10 C44 20 36 28 36 40 C36 52 56 58 56 70 C56 82 50 88 50 90" fill="none" stroke="%23ffffff" stroke-width="3.5" stroke-linecap="round"/>' +
-      '</svg>'
+    const color = visited ? '%23542916' : '%237ab648'
+    const border = visited ? '%233a1a0a' : '%234a8a28'
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'>
+      <ellipse cx='18' cy='18' rx='16' ry='16' fill='${color}' stroke='${border}' stroke-width='2'/>
+      <path d='M18 6 C14 10 11 13 11 18 C11 23 14 26 18 30' fill='none' stroke='${border}' stroke-width='3' stroke-linecap='round'/>
+      <path d='M18 6 C22 10 25 13 25 18 C25 23 22 26 18 30' fill='none' stroke='${border}' stroke-width='3' stroke-linecap='round'/>
+      <path d='M18 6 C14 10 11 13 11 18 C11 23 14 26 18 30' fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round'/>
+      <path d='M18 6 C22 10 25 13 25 18 C25 23 22 26 18 30' fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round'/>
+    </svg>`
     return {
-      url: 'data:image/svg+xml,' + svg,
-      scaledSize: new google.maps.Size(32, 32),
-      anchor: new google.maps.Point(16, 16),
+      url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
+      scaledSize: new google.maps.Size(36, 36),
+      anchor: new google.maps.Point(18, 18),
     }
   }
 
+  const markersRef = useRef([])
+
   function initMap() {
-    const map = new google.maps.Map(mapRef.current, {
+    markersRef.current.forEach(m => m.setMap(null))
+    markersRef.current = []
+    const map = mapInstanceRef.current || new google.maps.Map(mapRef.current, {
       center: { lat: 12.8797, lng: 121.7740 },
       zoom: 6,
       mapTypeControl: false,
@@ -81,6 +87,7 @@ export default function MapPage() {
         title: shop.name,
         icon: getBeanIcon(visitedShopIds.includes(shop.id)),
       })
+      markersRef.current.push(marker)
       const iw = new google.maps.InfoWindow({
         content: '<div style="font-family:DM Sans,sans-serif;padding:4px;max-width:180px">' +
           '<div style="font-weight:600;font-size:13px;color:#5C3D2E;margin-bottom:3px">' + shop.name + '</div>' +
