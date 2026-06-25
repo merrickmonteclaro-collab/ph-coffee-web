@@ -31,3 +31,8 @@
 .hoursDayToday { color: var(--terracotta); font-weight: 700; }
 .hoursTime { font-size: 13px; color: var(--brown); }
 .hoursTimeToday { color: var(--terracotta); font-weight: 600; }
+.visitedBtn { display: inline-flex; align-items: center; margin-bottom: 20px; padding: 8px 18px; border-radius: 20px; border: 1px solid var(--border); background: var(--bg-card); color: var(--brown); font-size: 13px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.15s; }
+.visitedBtn:hover:not(:disabled) { border-color: var(--terracotta); color: var(--terracotta); }
+.visitedBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+.visitedBtnActive { background: var(--terracotta); color: #FFEEBC; border-color: var(--terracotta); }
+.visitedBtnActive:hover:not(:disabled) { opacity: 0.88; color: #FFEEBC; }
