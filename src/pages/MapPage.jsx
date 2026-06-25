@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { API_URL, GOOGLE_MAPS_KEY } from '../utils/config'
+import { getToken, authFetch } from '../utils/auth'
 import styles from './MapPage.module.css'
 
 function getDistance(lat1, lon1, lat2, lon2) {
@@ -20,11 +21,18 @@ export default function MapPage() {
   const [locating, setLocating] = useState(false)
   const [locationError, setLocationError] = useState('')
   const [nearestShop, setNearestShop] = useState(null)
+  const [visitedShopIds, setVisitedShopIds] = useState([])
 
   useEffect(() => {
     fetch(`${API_URL}/shops/`)
       .then(r => r.json())
       .then(setShops)
+    if (getToken()) {
+      authFetch(`${API_URL}/visited/`)
+        .then(r => r.json())
+        .then(data => { if (Array.isArray(data)) setVisitedShopIds(data.map(v => v.shop_id)) })
+        .catch(() => {})
+    }
   }, [])
 
   useEffect(() => {
@@ -41,6 +49,21 @@ export default function MapPage() {
     }
   }, [shops])
 
+  function getBeanIcon(visited) {
+    const fill = visited ? '%237a3a1a' : '%237ab648'
+    const stroke = visited ? '%232a1008' : '%233a6820'
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 100 100">' +
+      '<path d="M50 8 C28 8 12 24 12 50 C12 76 28 92 50 92 C72 92 88 76 88 50 C88 24 72 8 50 8 Z" fill="' + fill + '" stroke="' + stroke + '" stroke-width="5"/>' +
+      '<path d="M50 10 C44 20 36 28 36 40 C36 52 56 58 56 70 C56 82 50 88 50 90" fill="none" stroke="' + stroke + '" stroke-width="6" stroke-linecap="round"/>' +
+      '<path d="M50 10 C44 20 36 28 36 40 C36 52 56 58 56 70 C56 82 50 88 50 90" fill="none" stroke="%23ffffff" stroke-width="3.5" stroke-linecap="round"/>' +
+      '</svg>'
+    return {
+      url: 'data:image/svg+xml,' + svg,
+      scaledSize: new google.maps.Size(32, 32),
+      anchor: new google.maps.Point(16, 16),
+    }
+  }
+
   function initMap() {
     const map = new google.maps.Map(mapRef.current, {
       center: { lat: 12.8797, lng: 121.7740 },
@@ -56,6 +79,7 @@ export default function MapPage() {
         position: { lat: shop.latitude, lng: shop.longitude },
         map,
         title: shop.name,
+        icon: getBeanIcon(visitedShopIds.includes(shop.id)),
       })
       const iw = new google.maps.InfoWindow({
         content: '<div style="font-family:DM Sans,sans-serif;padding:4px;max-width:180px">' +

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { API_URL } from '../utils/config'
+import { getToken, authFetch } from '../utils/auth'
 import styles from './ShopPage.module.css'
 
 export default function ShopPage() {
@@ -8,11 +9,24 @@ export default function ShopPage() {
   const navigate = useNavigate()
   const [shop, setShop] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [isVisited, setIsVisited] = useState(false)
+  const [visitLoading, setVisitLoading] = useState(false)
 
   useEffect(() => {
     fetch(`${API_URL}/shops/${id}`)
       .then(r => r.json())
-      .then(data => { setShop(data); setLoading(false) })
+      .then(data => {
+        setShop(data)
+        setLoading(false)
+        if (getToken()) {
+          authFetch(`${API_URL}/visited/`)
+            .then(r => r.json())
+            .then(visited => {
+              if (Array.isArray(visited)) setIsVisited(visited.some(v => v.shop_id === data.id))
+            })
+            .catch(() => {})
+        }
+      })
       .catch(() => setLoading(false))
   }, [id])
 
@@ -64,6 +78,18 @@ export default function ShopPage() {
     return hour + ':' + m.toString().padStart(2, '0') + ' ' + ampm
   }
 
+  async function toggleVisited() {
+    setVisitLoading(true)
+    if (isVisited) {
+      await authFetch(`${API_URL}/visited/${shop.id}`, { method: 'DELETE' })
+      setIsVisited(false)
+    } else {
+      await authFetch(`${API_URL}/visited/${shop.id}`, { method: 'POST' })
+      setIsVisited(true)
+    }
+    setVisitLoading(false)
+  }
+
   const openStatus = getOpenStatus()
   const parsedHours = shop.operating_hours ? (() => { try { return JSON.parse(shop.operating_hours) } catch { return null } })() : null
   
@@ -113,6 +139,16 @@ export default function ShopPage() {
         <h1 className={styles.name}>{shop.name}</h1>
         <p className={styles.address}>📍 {shop.address}</p>
         <p className={styles.cityRegion}>{shop.city} · {shop.region}</p>
+
+        {getToken() && (
+          <button
+            className={styles.visitedBtn + ' ' + (isVisited ? styles.visitedBtnActive : '')}
+            onClick={toggleVisited}
+            disabled={visitLoading}
+          >
+            {isVisited ? '✓ Visited' : 'Mark as Visited'}
+          </button>
+        )}
 
         {(shop.facebook_url || shop.instagram_url) && (
           <div className={styles.socialRow}>
