@@ -95,7 +95,9 @@ export default function HomePage() {
     shops.filter(s => s.latitude && s.longitude).forEach(shop => {
       const marker = new google.maps.Marker({
         position: { lat: shop.latitude, lng: shop.longitude },
-        map, title: shop.name,
+        map,
+        title: shop.name,
+        icon: getBeanIcon(visitedShopIds.includes(shop.id)),
       })
       const iw = new google.maps.InfoWindow({
         content: '<div style="font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-size:16px;font-weight:600;color:#542916">' + shop.name + '</div>'
