@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { API_URL, GOOGLE_MAPS_KEY } from '../utils/config'
+import { getToken, authFetch } from '../utils/auth'
 import styles from './HomePage.module.css'
 
 const FILTERS = [
@@ -34,6 +35,7 @@ export default function HomePage() {
   const [activeFilters, setActiveFilters] = useState([])
   const [loading, setLoading] = useState(true)
   const [location, setLocation] = useState(null)
+  const [visitedShopIds, setVisitedShopIds] = useState([])
 
   useEffect(() => {
     fetch(`${API_URL}/shops/`)
@@ -41,6 +43,12 @@ export default function HomePage() {
       .then(data => { setShops(data); setLoading(false) })
       .catch(() => setLoading(false))
 
+    if (getToken()) {
+      authFetch(`${API_URL}/visited/`)
+        .then(r => r.json())
+        .then(data => { if (Array.isArray(data)) setVisitedShopIds(data.map(v => v.shop_id)) })
+        .catch(() => {})
+    }
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(pos => {
         setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude })
@@ -55,7 +63,7 @@ export default function HomePage() {
     script.onload = () => initMap()
     document.head.appendChild(script)
     return () => { if (document.head.contains(script)) document.head.removeChild(script) }
-  }, [shops])
+  }, [shops, visitedShopIds])
 
   useEffect(() => {
     if (mapInstanceRef.current && location) {
@@ -63,6 +71,18 @@ export default function HomePage() {
       mapInstanceRef.current.setZoom(13)
     }
   }, [location])
+
+  function getBeanIcon(visited) {
+    return {
+      path: 'M 0,-16 C -8,-16 -16,-8 -16,0 C -16,8 -8,16 0,16 C 8,16 16,8 16,0 C 16,-8 8,-16 0,-16 Z',
+      fillColor: visited ? '#542916' : '#7ab648',
+      fillOpacity: 1,
+      strokeColor: visited ? '#2a1008' : '#3a6820',
+      strokeWeight: 2,
+      scale: 1,
+      anchor: new google.maps.Point(0, 0),
+    }
+  }
 
   function initMap() {
     const center = location || { lat: 14.5995, lng: 120.9842 }
