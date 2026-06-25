@@ -50,19 +50,14 @@ export default function MapPage() {
   }, [shops, visitedShopIds])
 
   function getBeanIcon(visited) {
-    const color = visited ? '%23542916' : '%237ab648'
-    const border = visited ? '%233a1a0a' : '%234a8a28'
-    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'>
-      <ellipse cx='18' cy='18' rx='16' ry='16' fill='${color}' stroke='${border}' stroke-width='2'/>
-      <path d='M18 6 C14 10 11 13 11 18 C11 23 14 26 18 30' fill='none' stroke='${border}' stroke-width='3' stroke-linecap='round'/>
-      <path d='M18 6 C22 10 25 13 25 18 C25 23 22 26 18 30' fill='none' stroke='${border}' stroke-width='3' stroke-linecap='round'/>
-      <path d='M18 6 C14 10 11 13 11 18 C11 23 14 26 18 30' fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round'/>
-      <path d='M18 6 C22 10 25 13 25 18 C25 23 22 26 18 30' fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round'/>
-    </svg>`
     return {
-      url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
-      scaledSize: new google.maps.Size(36, 36),
-      anchor: new google.maps.Point(18, 18),
+      path: 'M 0,-16 C -8,-16 -16,-8 -16,0 C -16,8 -8,16 0,16 C 8,16 16,8 16,0 C 16,-8 8,-16 0,-16 Z',
+      fillColor: visited ? '#542916' : '#7ab648',
+      fillOpacity: 1,
+      strokeColor: visited ? '#2a1008' : '#3a6820',
+      strokeWeight: 2,
+      scale: 1,
+      anchor: new google.maps.Point(0, 0),
     }
   }
 
