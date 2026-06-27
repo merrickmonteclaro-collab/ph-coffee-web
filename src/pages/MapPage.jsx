@@ -50,15 +50,8 @@ export default function MapPage() {
   }, [shops, visitedShopIds])
 
   function getBeanIcon(visited) {
-    return {
-      path: 'M 0,-16 C -8,-16 -16,-8 -16,0 C -16,8 -8,16 0,16 C 8,16 16,8 16,0 C 16,-8 8,-16 0,-16 Z',
-      fillColor: visited ? '#542916' : '#7ab648',
-      fillOpacity: 1,
-      strokeColor: visited ? '#2a1008' : '#3a6820',
-      strokeWeight: 2,
-      scale: 1,
-      anchor: new google.maps.Point(0, 0),
-    }
+    if (!visited) return undefined
+    return { url: 'https://maps.google.com/mapfiles/ms/icons/flag.png' }
   }
 
   const markersRef = useRef([])

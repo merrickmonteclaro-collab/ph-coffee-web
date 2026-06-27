@@ -73,14 +73,10 @@ export default function HomePage() {
   }, [location])
 
   function getBeanIcon(visited) {
+    if (!visited) return null
     return {
-      path: 'M 0,-16 C -8,-16 -16,-8 -16,0 C -16,8 -8,16 0,16 C 8,16 16,8 16,0 C 16,-8 8,-16 0,-16 Z',
-      fillColor: visited ? '#542916' : '#7ab648',
-      fillOpacity: 1,
-      strokeColor: visited ? '#2a1008' : '#3a6820',
-      strokeWeight: 2,
-      scale: 1,
-      anchor: new google.maps.Point(0, 0),
+      url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
+      labelOrigin: new google.maps.Point(0, -10),
     }
   }
 
@@ -97,7 +93,7 @@ export default function HomePage() {
         position: { lat: shop.latitude, lng: shop.longitude },
         map,
         title: shop.name,
-        icon: getBeanIcon(visitedShopIds.includes(shop.id)),
+        icon: visitedShopIds.includes(shop.id) ? { url: 'https://maps.google.com/mapfiles/ms/icons/flag.png' } : undefined,
       })
       const iw = new google.maps.InfoWindow({
         content: '<div style="font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-size:16px;font-weight:600;color:#542916">' + shop.name + '</div>'
