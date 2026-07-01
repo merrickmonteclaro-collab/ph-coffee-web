@@ -36,3 +36,6 @@
 .visitedBtn:disabled { opacity: 0.6; cursor: not-allowed; }
 .visitedBtnActive { background: var(--terracotta); color: #FFEEBC; border-color: var(--terracotta); }
 .visitedBtnActive:hover:not(:disabled) { opacity: 0.88; color: #FFEEBC; }
+.photoGallery { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+.photoGallery::-webkit-scrollbar { display: none; }
+.galleryImg { min-width: 100%; height: 240px; object-fit: cover; scroll-snap-align: start; flex-shrink: 0; }

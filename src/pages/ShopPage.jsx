@@ -9,6 +9,7 @@ export default function ShopPage() {
   const navigate = useNavigate()
   const [shop, setShop] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [photos, setPhotos] = useState([])
   const [isVisited, setIsVisited] = useState(false)
   const [visitLoading, setVisitLoading] = useState(false)
 
@@ -18,6 +19,10 @@ export default function ShopPage() {
       .then(data => {
         setShop(data)
         setLoading(false)
+        fetch(`${API_URL}/photos/shop/${data.id}`)
+          .then(r => r.json())
+          .then(p => { if (Array.isArray(p)) setPhotos(p) })
+          .catch(() => {})
         if (getToken()) {
           authFetch(`${API_URL}/visited/`)
             .then(r => r.json())
@@ -127,7 +132,13 @@ export default function ShopPage() {
 
   return (
     <div className={styles.page}>
-      {shop.photo_url && shop.photo_url !== 'string' ? (
+      {photos.length > 0 ? (
+        <div className={styles.photoGallery}>
+          {photos.map(p => (
+            <img key={p.id} src={p.photo_url} alt={shop.name} className={styles.galleryImg} />
+          ))}
+        </div>
+      ) : shop.photo_url && shop.photo_url !== 'string' ? (
         <img src={shop.photo_url} alt={shop.name} className={styles.hero} />
       ) : (
         <div className={styles.heroPlaceholder}>☕</div>
