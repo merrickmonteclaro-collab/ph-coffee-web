@@ -98,37 +98,17 @@ export default function ShopPage() {
   const openStatus = getOpenStatus()
   const parsedHours = shop.operating_hours ? (() => { try { return JSON.parse(shop.operating_hours) } catch { return null } })() : null
   
-  const amenities = [
-    { label: 'WiFi', value: shop.has_wifi },
-    { label: 'Work Friendly', value: shop.is_work_friendly },
-    { label: 'Pet Friendly', value: shop.is_pet_friendly },
-  ]
-
-  const food = [
-    { label: 'Full Meals', value: shop.has_meals },
-    { label: 'Pastries', value: shop.has_pastries },
-  ]
-
-  const parking = [
-    { label: 'Car Parking', value: shop.has_car_parking },
-    { label: 'Bike Parking', value: shop.has_bike_parking },
-  ]
-
-  const payments = [{ label: 'Accepts Cards', value: shop.accepts_cards }]
-  const comfort = [{ label: 'Toilet Bidet', value: shop.has_toilet_bidet }]
-
-  function AmenityGrid({ items }) {
-    return (
-      <div className={styles.amenityGrid}>
-        {items.map(item => (
-          <div key={item.label} className={styles.amenityItem + ' ' + (item.value ? styles.yes : styles.no)}>
-            <span className={styles.amenityDot}>{item.value ? '✓' : '✗'}</span>
-            <span className={styles.amenityLabel}>{item.label}</span>
-          </div>
-        ))}
-      </div>
-    )
-  }
+  const allAmenities = [
+    { label: 'WiFi', value: shop.has_wifi, icon: '📶' },
+    { label: 'Work Friendly', value: shop.is_work_friendly, icon: '💻' },
+    { label: 'Pet Friendly', value: shop.is_pet_friendly, icon: '🐾' },
+    { label: 'Full Meals', value: shop.has_meals, icon: '🍽️' },
+    { label: 'Pastries', value: shop.has_pastries, icon: '🥐' },
+    { label: 'Car Parking', value: shop.has_car_parking, icon: '🚗' },
+    { label: 'Bike Parking', value: shop.has_bike_parking, icon: '🚲' },
+    { label: 'Cards Accepted', value: shop.accepts_cards, icon: '💳' },
+    { label: 'Toilet Bidet', value: shop.has_toilet_bidet, icon: '🚿' },
+  ].filter(a => a.value)
 
   return (
     <div className={styles.page}>
@@ -207,30 +187,19 @@ export default function ShopPage() {
           </div>
         )}
 
-        <div className={styles.section}>
-          <div className={styles.sectionTitle}>🍽️ Food</div>
-          <AmenityGrid items={food} />
-        </div>
-
-        <div className={styles.section}>
-          <div className={styles.sectionTitle}>🏠 Amenities</div>
-          <AmenityGrid items={amenities} />
-        </div>
-
-        <div className={styles.section}>
-          <div className={styles.sectionTitle}>🚗 Parking</div>
-          <AmenityGrid items={parking} />
-        </div>
-
-        <div className={styles.section}>
-          <div className={styles.sectionTitle}>💳 Payments</div>
-          <AmenityGrid items={payments} />
-        </div>
-
-        <div className={styles.section}>
-          <div className={styles.sectionTitle}>🚿 Comfort Room</div>
-          <AmenityGrid items={comfort} />
-        </div>
+        {allAmenities.length > 0 && (
+          <div className={styles.section}>
+            <div className={styles.sectionTitle}>✦ Amenities</div>
+            <div className={styles.amenityGrid}>
+              {allAmenities.map(a => (
+                <div key={a.label} className={styles.iconChip}>
+                  <span>{a.icon}</span>
+                  <span>{a.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {mapsUrl && (
           <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className={styles.mapsBtn}>Open in Google Maps →</a>

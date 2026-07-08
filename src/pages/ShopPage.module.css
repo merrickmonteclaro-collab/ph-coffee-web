@@ -39,3 +39,4 @@
 .photoGallery { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
 .photoGallery::-webkit-scrollbar { display: none; }
 .galleryImg { min-width: 100%; height: 240px; object-fit: cover; scroll-snap-align: start; flex-shrink: 0; }
+.iconChip { display: inline-flex; align-items: center; gap: 5px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: 12px; color: var(--brown); font-weight: 500; }
