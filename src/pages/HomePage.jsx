@@ -96,7 +96,14 @@ export default function HomePage() {
         icon: visitedShopIds.includes(shop.id) ? { url: 'https://maps.google.com/mapfiles/ms/icons/flag.png' } : undefined,
       })
       const iw = new google.maps.InfoWindow({
-        content: '<div style="font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-size:16px;font-weight:600;color:#542916">' + shop.name + '</div>'
+        content: '<div style="font-family:DM Sans,sans-serif;padding:4px;min-width:160px">' +
+          '<div style="font-weight:700;font-size:14px;color:#542916;margin-bottom:3px">' + shop.name + '</div>' +
+          '<div style="font-size:11px;color:#88b8ce;margin-bottom:8px">' + shop.city + ' · ' + shop.region + '</div>' +
+          '<div style="display:flex;gap:6px">' +
+            '<a href="/shop/' + shop.id + '" style="flex:1;background:#542916;color:#FFEEBC;border-radius:6px;padding:5px 8px;font-size:11px;font-weight:600;text-align:center;text-decoration:none">View Shop</a>' +
+            '<a href="https://www.google.com/maps/dir/?api=1&destination=' + shop.latitude + ',' + shop.longitude + '" target="_blank" style="flex:1;background:#88b8ce;color:#FFEEBC;border-radius:6px;padding:5px 8px;font-size:11px;font-weight:600;text-align:center;text-decoration:none">Navigate</a>' +
+          '</div>' +
+        '</div>'
       })
       marker.addListener('click', () => iw.open(map, marker))
     })
