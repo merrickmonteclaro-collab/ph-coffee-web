@@ -4,7 +4,6 @@ import { getToken } from '../utils/auth'
 
 const TABS = [
   { path: '/', label: 'Home', icon: '🗺️' },
-  { path: '/map', label: 'Map', icon: '📍' },
   { path: '/favorites', label: 'Favorites', icon: '🤍' },
   { path: '/suggest', label: 'Suggest', icon: '💡' },
 ]

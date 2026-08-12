@@ -2,7 +2,6 @@ import { Routes, Route } from 'react-router-dom'
 import TabBar from './components/TabBar'
 import HomePage from './pages/HomePage'
 import ShopPage from './pages/ShopPage'
-import MapPage from './pages/MapPage'
 import SuggestPage from './pages/SuggestPage'
 import AuthPage from './pages/AuthPage'
 import AccountPage from './pages/AccountPage'
@@ -13,7 +12,6 @@ export default function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/shop/:id" element={<ShopPage />} />
-        <Route path="/map" element={<MapPage />} />
         <Route path="/suggest" element={<SuggestPage />} />
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/account" element={<AccountPage />} />
