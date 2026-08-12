@@ -19,7 +19,7 @@ const FILTERS = [
 // Snap point layout mirrors the mobile app's bottom sheet:
 // TOP = fully open, HALF = default resting position, PEEK = mostly collapsed.
 const SNAP_TOP_OFFSET = 80 // px from top of container when fully open
-const SNAP_PEEK_VISIBLE = 155 // px of sheet visible above the tab bar when collapsed
+const SNAP_PEEK_VISIBLE = 130 // px of sheet visible above the tab bar when collapsed
 
 function getDistance(lat1, lon1, lat2, lon2) {
   const R = 6371
