@@ -4,6 +4,26 @@ import { API_URL } from '../utils/config'
 import { getToken, authFetch } from '../utils/auth'
 import styles from './ShopPage.module.css'
 
+// Inserts Cloudinary transformation params into an upload URL so the CDN
+// serves an already-resized, compressed image instead of the original.
+// Falls back to the raw url unchanged if it isn't a Cloudinary /upload/ URL.
+// NOTE: width/height passed in should already be scaled for pixel density —
+// dpr_auto depends on Client Hints headers that aren't reliably supported
+// across browsers (notably Safari), so we compute pixel dimensions ourselves.
+function getOptimizedImageUrl(url, width, height) {
+  if (!url || !url.includes('/upload/')) return url
+  const transform = `w_${width},h_${height},c_fill,g_auto,q_auto:good,f_auto`
+  return url.replace('/upload/', `/upload/${transform}/`)
+}
+
+// .hero / .galleryImg are width: 100%, so request based on actual viewport
+// width rather than a guessed fixed size — keeps desktop crisp without
+// over-fetching on mobile.
+const DPR = Math.min(window.devicePixelRatio || 1, 3)
+const PHOTO_WIDTH = Math.round(Math.min(window.innerWidth, 1600) * DPR)
+const HERO_HEIGHT = Math.round(220 * DPR)
+const GALLERY_HEIGHT = Math.round(240 * DPR)
+
 export default function ShopPage() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -70,8 +90,18 @@ export default function ShopPage() {
       const [closeH, closeM] = todayHours.close.split(':').map(Number);
       const currentMins = phHours * 60 + phMinutes;
       const openMins = openH * 60 + openM;
-      const closeMins = closeH * 60 + closeM;
-      return { isOpen: currentMins >= openMins && currentMins < closeMins, today, hours: todayHours };
+      let closeMins = closeH * 60 + closeM;
+      let adjustedCurrentMins = currentMins;
+      // Closing time at/before opening time means it rolls past midnight
+      // (e.g. "close": "00:00" really means end-of-day, not 12:00 AM start-of-day).
+      // Push it 24h later for comparison purposes.
+      if (closeMins <= openMins) {
+        closeMins += 24 * 60;
+      }
+      if (adjustedCurrentMins < openMins && closeMins > 24 * 60) {
+        adjustedCurrentMins += 24 * 60;
+      }
+      return { isOpen: adjustedCurrentMins >= openMins && adjustedCurrentMins < closeMins, today, hours: todayHours };
     } catch { return null; }
   }
 
@@ -115,11 +145,21 @@ export default function ShopPage() {
       {photos.length > 0 ? (
         <div className={styles.photoGallery}>
           {photos.map(p => (
-            <img key={p.id} src={p.photo_url} alt={shop.name} className={styles.galleryImg} />
+            <img
+              key={p.id}
+              src={getOptimizedImageUrl(p.photo_url, PHOTO_WIDTH, GALLERY_HEIGHT)}
+              alt={shop.name}
+              className={styles.galleryImg}
+              loading="lazy"
+            />
           ))}
         </div>
       ) : shop.photo_url && shop.photo_url !== 'string' ? (
-        <img src={shop.photo_url} alt={shop.name} className={styles.hero} />
+        <img
+          src={getOptimizedImageUrl(shop.photo_url, PHOTO_WIDTH, HERO_HEIGHT)}
+          alt={shop.name}
+          className={styles.hero}
+        />
       ) : (
         <div className={styles.heroPlaceholder}>☕</div>
       )}
@@ -141,13 +181,16 @@ export default function ShopPage() {
           </button>
         )}
 
-        {(shop.facebook_url || shop.instagram_url) && (
+        {(shop.facebook_url || shop.instagram_url || shop.website_url) && (
           <div className={styles.socialRow}>
             {shop.facebook_url && (
               <a href={shop.facebook_url} target="_blank" rel="noopener noreferrer" className={styles.socialBtn}>📘 Facebook</a>
             )}
             {shop.instagram_url && (
               <a href={shop.instagram_url} target="_blank" rel="noopener noreferrer" className={styles.socialBtn}>📷 Instagram</a>
+            )}
+            {shop.website_url && (
+              <a href={shop.website_url} target="_blank" rel="noopener noreferrer" className={styles.socialBtn}>🌐 Website</a>
             )}
           </div>
         )}

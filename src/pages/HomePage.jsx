@@ -26,6 +26,22 @@ function getDistance(lat1, lon1, lat2, lon2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 }
 
+// Inserts Cloudinary transformation params into an upload URL so the CDN
+// serves an already-resized, compressed image instead of the original.
+// Falls back to the raw url unchanged if it isn't a Cloudinary /upload/ URL.
+// NOTE: width/height passed in should already be scaled for pixel density —
+// dpr_auto depends on Client Hints headers that aren't reliably supported
+// across browsers (notably Safari), so we compute pixel dimensions ourselves.
+function getOptimizedImageUrl(url, width, height) {
+  if (!url || !url.includes('/upload/')) return url
+  const transform = `w_${width},h_${height},c_fill,g_auto,q_auto:good,f_auto`
+  return url.replace('/upload/', `/upload/${transform}/`)
+}
+
+// Cap at 3x — going higher rarely improves visible quality and just
+// inflates payload size unnecessarily.
+const DPR = Math.min(window.devicePixelRatio || 1, 3)
+
 export default function HomePage() {
   const mapRef = useRef(null)
   const mapInstanceRef = useRef(null)
@@ -186,7 +202,12 @@ export default function HomePage() {
             filtered.map(shop => (
               <Link to={'/shop/' + shop.id} key={shop.id} className={styles.card}>
                 {shop.photo_url && shop.photo_url !== 'string' ? (
-                  <img src={shop.photo_url} alt={shop.name} className={styles.cardImg} />
+                  <img
+                    src={getOptimizedImageUrl(shop.photo_url, Math.round(72 * DPR), Math.round(76 * DPR))}
+                    alt={shop.name}
+                    className={styles.cardImg}
+                    loading="lazy"
+                  />
                 ) : (
                   <div className={styles.cardImgPlaceholder}>☕</div>
                 )}
