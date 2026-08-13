@@ -32,6 +32,8 @@ export default function ShopPage() {
   const [photos, setPhotos] = useState([])
   const [isVisited, setIsVisited] = useState(false)
   const [visitLoading, setVisitLoading] = useState(false)
+  const [isFavorited, setIsFavorited] = useState(false)
+  const [favoriteLoading, setFavoriteLoading] = useState(false)
 
   useEffect(() => {
     fetch(`${API_URL}/shops/${id}`)
@@ -48,6 +50,12 @@ export default function ShopPage() {
             .then(r => r.json())
             .then(visited => {
               if (Array.isArray(visited)) setIsVisited(visited.some(v => v.shop_id === data.id))
+            })
+            .catch(() => {})
+          authFetch(`${API_URL}/favorites/`)
+            .then(r => r.json())
+            .then(favorites => {
+              if (Array.isArray(favorites)) setIsFavorited(favorites.some(f => f.shop_id === data.id))
             })
             .catch(() => {})
         }
@@ -125,6 +133,18 @@ export default function ShopPage() {
     setVisitLoading(false)
   }
 
+  async function toggleFavorite() {
+    setFavoriteLoading(true)
+    if (isFavorited) {
+      await authFetch(`${API_URL}/favorites/${shop.id}`, { method: 'DELETE' })
+      setIsFavorited(false)
+    } else {
+      await authFetch(`${API_URL}/favorites/${shop.id}`, { method: 'POST' })
+      setIsFavorited(true)
+    }
+    setFavoriteLoading(false)
+  }
+
   const openStatus = getOpenStatus()
   const parsedHours = shop.operating_hours ? (() => { try { return JSON.parse(shop.operating_hours) } catch { return null } })() : null
   
@@ -172,13 +192,23 @@ export default function ShopPage() {
         <p className={styles.cityRegion}>{shop.city} · {shop.region}</p>
 
         {getToken() && (
-          <button
-            className={styles.visitedBtn + ' ' + (isVisited ? styles.visitedBtnActive : '')}
-            onClick={toggleVisited}
-            disabled={visitLoading}
-          >
-            {isVisited ? '✓ Visited' : 'Mark as Visited'}
-          </button>
+          <div className={styles.actionRow}>
+            <button
+              className={styles.visitedBtn + ' ' + (isVisited ? styles.visitedBtnActive : '')}
+              onClick={toggleVisited}
+              disabled={visitLoading}
+            >
+              {isVisited ? '✓ Visited' : 'Mark as Visited'}
+            </button>
+            <button
+              className={styles.favoriteBtn + ' ' + (isFavorited ? styles.favoriteBtnActive : '')}
+              onClick={toggleFavorite}
+              disabled={favoriteLoading}
+              aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
+            >
+              {isFavorited ? '❤️' : '🤍'}
+            </button>
+          </div>
         )}
 
         {(shop.facebook_url || shop.instagram_url || shop.website_url) && (
