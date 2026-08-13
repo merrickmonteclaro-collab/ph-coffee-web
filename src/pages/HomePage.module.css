@@ -118,7 +118,7 @@
 .list {
   flex: 1;
   overflow-y: auto;
-  padding-bottom: 8px;
+  padding-bottom: 32px;
 }
 .empty {
   text-align: center;
