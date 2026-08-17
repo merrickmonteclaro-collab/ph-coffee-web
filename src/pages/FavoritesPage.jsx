@@ -2,7 +2,17 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { API_URL } from '../utils/config'
 import { getToken, authFetch } from '../utils/auth'
+import { getShops } from '../utils/shopsCache'
 import styles from './FavoritesPage.module.css'
+
+// Inserts Cloudinary transformation params into an upload URL so the CDN
+// serves an already-resized, compressed image instead of the original.
+function getOptimizedImageUrl(url, width, height) {
+  if (!url || !url.includes('/upload/')) return url
+  const transform = `w_${width},h_${height},c_fill,g_auto,q_auto:good,f_auto`
+  return url.replace('/upload/', `/upload/${transform}/`)
+}
+const DPR = Math.min(window.devicePixelRatio || 1, 3)
 
 export default function FavoritesPage() {
   const [favorites, setFavorites] = useState([])
@@ -15,7 +25,7 @@ export default function FavoritesPage() {
       return
     }
     Promise.all([
-      fetch(`${API_URL}/shops/`).then(r => r.json()),
+      getShops(),
       authFetch(`${API_URL}/favorites/`).then(r => r.json()),
     ])
       .then(([shops, favRecords]) => {
@@ -51,7 +61,12 @@ export default function FavoritesPage() {
           favorites.map(shop => (
             <Link to={'/shop/' + shop.id} key={shop.id} className={styles.card}>
               {shop.photo_url && shop.photo_url !== 'string' ? (
-                <img src={shop.photo_url} alt={shop.name} className={styles.cardImg} loading="lazy" />
+                <img
+                  src={getOptimizedImageUrl(shop.photo_url, Math.round(72 * DPR), Math.round(76 * DPR))}
+                  alt={shop.name}
+                  className={styles.cardImg}
+                  loading="lazy"
+                />
               ) : (
                 <div className={styles.cardImgPlaceholder}>☕</div>
               )}

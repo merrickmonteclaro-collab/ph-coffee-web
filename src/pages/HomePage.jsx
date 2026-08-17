@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { API_URL, GOOGLE_MAPS_KEY } from '../utils/config'
 import { getToken, authFetch } from '../utils/auth'
+import { getShops } from '../utils/shopsCache'
 import styles from './HomePage.module.css'
 
 const FILTERS = [
@@ -19,7 +20,7 @@ const FILTERS = [
 // Snap point layout mirrors the mobile app's bottom sheet:
 // TOP = fully open, HALF = default resting position, PEEK = mostly collapsed.
 const SNAP_TOP_OFFSET = 80 // px from top of container when fully open
-const SNAP_PEEK_VISIBLE = 80 // px of sheet visible above the tab bar when collapsed
+const SNAP_PEEK_VISIBLE = 155 // px of sheet visible above the tab bar when collapsed
 
 function getDistance(lat1, lon1, lat2, lon2) {
   const R = 6371
@@ -137,8 +138,7 @@ export default function HomePage() {
   }, [dragging, snapPoints, translateY, snapTo])
 
   useEffect(() => {
-    fetch(`${API_URL}/shops/`)
-      .then(r => r.json())
+    getShops()
       .then(data => { setShops(data); setLoading(false) })
       .catch(() => setLoading(false))
 
@@ -157,11 +157,18 @@ export default function HomePage() {
 
   useEffect(() => {
     if (!shops.length) return
+    // Skip re-loading the SDK if it's already present — reloading the entire
+    // Google Maps script on every Home page visit was the main cause of
+    // slow page-to-page navigation.
+    if (window.google && window.google.maps) { initMap(); return }
+    if (document.getElementById('google-maps-script')) return // already loading
     const script = document.createElement('script')
+    script.id = 'google-maps-script'
     script.src = 'https://maps.googleapis.com/maps/api/js?key=' + GOOGLE_MAPS_KEY
     script.onload = () => initMap()
     document.head.appendChild(script)
-    return () => { if (document.head.contains(script)) document.head.removeChild(script) }
+    // Intentionally not removing the script on unmount — keeping it loaded
+    // lets revisiting this page skip the SDK download entirely.
   }, [shops, visitedShopIds])
 
   useEffect(() => {
