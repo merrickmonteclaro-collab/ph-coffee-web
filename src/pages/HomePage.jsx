@@ -51,6 +51,7 @@ const DPR = Math.min(window.devicePixelRatio || 1, 3)
 export default function HomePage() {
   const mapRef = useRef(null)
   const mapInstanceRef = useRef(null)
+  const userMarkerRef = useRef(null)
   const containerRef = useRef(null)
   const sheetRef = useRef(null)
 
@@ -61,6 +62,8 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true)
   const [location, setLocation] = useState(null)
   const [visitedShopIds, setVisitedShopIds] = useState([])
+  const [locating, setLocating] = useState(false)
+  const [locationError, setLocationError] = useState('')
 
   // ── Draggable bottom sheet ──
   const [snapPoints, setSnapPoints] = useState(null) // { top, half, peek }
@@ -171,10 +174,51 @@ export default function HomePage() {
     // lets revisiting this page skip the SDK download entirely.
   }, [shops, visitedShopIds])
 
+  function handleLocateMe() {
+    setLocationError('')
+    if (!navigator.geolocation) {
+      setLocationError('Geolocation not supported on this browser.')
+      return
+    }
+    setLocating(true)
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude })
+        setLocating(false)
+      },
+      () => {
+        setLocating(false)
+        setLocationError('Could not get your location.')
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    )
+  }
+
   useEffect(() => {
     if (mapInstanceRef.current && location) {
       mapInstanceRef.current.setCenter(location)
       mapInstanceRef.current.setZoom(13)
+
+      // Place/move the user's own location pin — a filled circle, matching
+      // the style previously used on the standalone Map page.
+      if (userMarkerRef.current) {
+        userMarkerRef.current.setPosition(location)
+      } else {
+        userMarkerRef.current = new google.maps.Marker({
+          position: location,
+          map: mapInstanceRef.current,
+          title: 'Your location',
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 10,
+            fillColor: '#C8603A',
+            fillOpacity: 1,
+            strokeColor: '#fff',
+            strokeWeight: 2,
+          },
+          zIndex: 999,
+        })
+      }
     }
   }, [location])
 
@@ -250,6 +294,13 @@ export default function HomePage() {
   return (
     <div className={styles.container} ref={containerRef}>
       <div ref={mapRef} className={styles.map} />
+
+      <div className={styles.mapOverlay}>
+        {locationError && <div className={styles.locationError}>{locationError}</div>}
+        <button className={styles.locateBtn} onClick={handleLocateMe} disabled={locating}>
+          {locating ? 'Locating...' : '📍 Find my location'}
+        </button>
+      </div>
 
       <div
         ref={sheetRef}
