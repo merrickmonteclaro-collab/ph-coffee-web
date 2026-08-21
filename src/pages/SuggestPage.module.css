@@ -11,9 +11,16 @@
 .submitBtn:hover:not(:disabled) { opacity: 0.88; }
 .submitBtn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.tabRow { display: flex; gap: 8px; margin-bottom: 20px; }
-.tabBtn { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--white); color: var(--brown-muted); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; text-align: center; }
+.tabRow { display: flex; gap: 6px; margin-bottom: 20px; }
+.tabBtn { flex: 1; padding: 10px 4px; border-radius: 10px; border: 1px solid var(--border); background: var(--white); color: var(--brown-muted); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; text-align: center; }
 .tabBtnActive { background: var(--terracotta); border-color: var(--terracotta); color: #fff; }
+
+.photoRow { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; }
+.photoThumbWrap { position: relative; width: 72px; height: 72px; }
+.photoThumb { width: 72px; height: 72px; border-radius: 10px; object-fit: cover; display: block; }
+.photoRemoveBtn { position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; border-radius: 50%; background: var(--terracotta); color: #fff; border: none; font-size: 11px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.photoAddBtn { width: 72px; height: 72px; border-radius: 10px; border: 1px dashed var(--border); background: var(--white); cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; }
+.photoHint { font-size: 11px; color: var(--brown-muted); margin: -4px 0 16px; }
 
 .shopResultItem { display: flex; align-items: center; justify-content: space-between; background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 6px; cursor: pointer; color: var(--brown-muted); }
 .shopResultItem:hover { border-color: var(--terracotta); }
