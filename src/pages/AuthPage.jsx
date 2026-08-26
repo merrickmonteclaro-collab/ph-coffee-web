@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { API_URL } from '../utils/config'
 import { saveToken } from '../utils/auth'
 import styles from './AuthPage.module.css'
@@ -74,6 +74,12 @@ export default function AuthPage() {
 
           <label className={styles.label}>Password</label>
           <input className={styles.input} type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} autoComplete="current-password" />
+
+          {isLogin && (
+            <Link to="/forgot-password" className={styles.toggle} style={{ display: 'block', textAlign: 'right', marginBottom: 8 }}>
+              Forgot password?
+            </Link>
+          )}
 
           <button className={styles.btn} type="submit" disabled={loading}>
             {loading ? 'Please wait...' : isLogin ? 'Log In' : 'Register'}

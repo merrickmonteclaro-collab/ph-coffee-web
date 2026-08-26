@@ -6,6 +6,8 @@ import SuggestPage from './pages/SuggestPage'
 import AuthPage from './pages/AuthPage'
 import AccountPage from './pages/AccountPage'
 import FavoritesPage from './pages/FavoritesPage'
+import ForgotPasswordPage from './pages/ForgotPasswordPage'
+import ResetPasswordPage from './pages/ResetPasswordPage'
 
 export default function App() {
   return (
@@ -17,6 +19,8 @@ export default function App() {
         <Route path="/suggest" element={<SuggestPage />} />
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/account" element={<AccountPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
       </Routes>
       <TabBar />
     </div>
