@@ -238,6 +238,12 @@ export default function HomePage() {
       fullscreenControl: false, zoomControl: false,
     })
     mapInstanceRef.current = map
+
+    // A single shared InfoWindow, reused across all markers. Opening it on a
+    // new marker automatically moves it away from wherever it was previously
+    // shown, so only one popup can ever be visible at a time.
+    const infoWindow = new google.maps.InfoWindow()
+
     shops.filter(s => s.latitude && s.longitude).forEach(shop => {
       const marker = new google.maps.Marker({
         position: { lat: shop.latitude, lng: shop.longitude },
@@ -245,8 +251,7 @@ export default function HomePage() {
         title: shop.name,
         icon: visitedShopIds.includes(shop.id) ? { url: 'https://maps.google.com/mapfiles/ms/icons/flag.png' } : undefined,
       })
-      const iw = new google.maps.InfoWindow({
-        content: '<div style="font-family:DM Sans,sans-serif;padding:4px;min-width:160px">' +
+      const content = '<div style="font-family:DM Sans,sans-serif;padding:4px;min-width:160px">' +
           '<div style="font-weight:700;font-size:14px;color:#542916;margin-bottom:3px">' + shop.name + '</div>' +
           '<div style="font-size:11px;color:#88b8ce;margin-bottom:8px">' + shop.city + ' · ' + shop.region + '</div>' +
           '<div style="display:flex;gap:6px">' +
@@ -254,8 +259,10 @@ export default function HomePage() {
             '<a href="https://www.google.com/maps/dir/?api=1&destination=' + shop.latitude + ',' + shop.longitude + '" target="_blank" style="flex:1;background:#88b8ce;color:#FFEEBC;border-radius:6px;padding:5px 8px;font-size:11px;font-weight:600;text-align:center;text-decoration:none">Navigate</a>' +
           '</div>' +
         '</div>'
+      marker.addListener('click', () => {
+        infoWindow.setContent(content)
+        infoWindow.open(map, marker)
       })
-      marker.addListener('click', () => iw.open(map, marker))
     })
   }
 
