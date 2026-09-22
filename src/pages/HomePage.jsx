@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { API_URL, GOOGLE_MAPS_KEY } from '../utils/config'
 import { getToken, authFetch } from '../utils/auth'
 import { getShops } from '../utils/shopsCache'
+import { COUNTRIES, DEFAULT_COUNTRY, detectCountry, getCountryInfo } from '../utils/countries'
 import styles from './HomePage.module.css'
 
 const FILTERS = [
@@ -64,6 +65,14 @@ export default function HomePage() {
   const [visitedShopIds, setVisitedShopIds] = useState([])
   const [locating, setLocating] = useState(false)
   const [locationError, setLocationError] = useState('')
+  const [country, setCountry] = useState(DEFAULT_COUNTRY)
+  const [countryPickerOpen, setCountryPickerOpen] = useState(false)
+  // The country detected from the user's real position on load. Used to
+  // decide whether the map should follow their live location (home country)
+  // or stay put on a country's default center (browsing elsewhere via the
+  // switcher) — mirrors the distinction mobile makes between the initial
+  // GPS-based center and a manual country switch.
+  const homeCountryRef = useRef(DEFAULT_COUNTRY)
 
   // ── Draggable bottom sheet ──
   const [snapPoints, setSnapPoints] = useState(null) // { top, half, peek }
@@ -141,25 +150,54 @@ export default function HomePage() {
   }, [dragging, snapPoints, translateY, snapTo])
 
   useEffect(() => {
-    getShops()
-      .then(data => { setShops(data); setLoading(false) })
-      .catch(() => setLoading(false))
-
     if (getToken()) {
       authFetch(`${API_URL}/visited/`)
         .then(r => r.json())
         .then(data => { if (Array.isArray(data)) setVisitedShopIds(data.map(v => v.shop_id)) })
         .catch(() => {})
     }
+
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(pos => {
-        setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude })
-      })
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          const coords = { lat: pos.coords.latitude, lng: pos.coords.longitude }
+          setLocation(coords)
+          const detected = detectCountry(coords.lat, coords.lng)
+          homeCountryRef.current = detected
+          setCountry(detected)
+          loadShops(detected)
+        },
+        () => {
+          setLocationError('Location permission denied. Showing shops for the default country.')
+          loadShops(DEFAULT_COUNTRY)
+        }
+      )
+    } else {
+      loadShops(DEFAULT_COUNTRY)
     }
   }, [])
 
+  function loadShops(countryCode) {
+    setLoading(true)
+    getShops({ country: countryCode })
+      .then(data => { setShops(data); setLoading(false) })
+      .catch(() => setLoading(false))
+  }
+
+  function handleSelectCountry(countryCode) {
+    setCountryPickerOpen(false)
+    if (countryCode === country) return
+    setCountry(countryCode)
+    loadShops(countryCode)
+    // initMap (triggered by the shops update above) recenters the map on
+    // this country's default view once the new data comes back.
+  }
+
   useEffect(() => {
-    if (!shops.length) return
+    // Wait for the current country's fetch to resolve rather than gating on
+    // shop count — a country with zero shops yet (e.g. HK/TW pre-launch)
+    // should still get an initialized, correctly-centered empty map.
+    if (loading) return
     // Skip re-loading the SDK if it's already present — reloading the entire
     // Google Maps script on every Home page visit was the main cause of
     // slow page-to-page navigation.
@@ -172,7 +210,7 @@ export default function HomePage() {
     document.head.appendChild(script)
     // Intentionally not removing the script on unmount — keeping it loaded
     // lets revisiting this page skip the SDK download entirely.
-  }, [shops, visitedShopIds])
+  }, [shops, visitedShopIds, loading, country])
 
   function handleLocateMe() {
     setLocationError('')
@@ -196,8 +234,13 @@ export default function HomePage() {
 
   useEffect(() => {
     if (mapInstanceRef.current && location) {
-      mapInstanceRef.current.setCenter(location)
-      mapInstanceRef.current.setZoom(13)
+      // Only recenter on the user's live position while they're browsing
+      // their detected home country — while browsing another country via
+      // the switcher, recentering here would fight that country's view.
+      if (country === homeCountryRef.current) {
+        mapInstanceRef.current.setCenter(location)
+        mapInstanceRef.current.setZoom(13)
+      }
 
       // Place/move the user's own location pin — a filled circle, matching
       // the style previously used on the standalone Map page.
@@ -220,7 +263,7 @@ export default function HomePage() {
         })
       }
     }
-  }, [location])
+  }, [location, country])
 
   function getBeanIcon(visited) {
     if (!visited) return null
@@ -231,9 +274,10 @@ export default function HomePage() {
   }
 
   function initMap() {
-    const center = location || { lat: 14.5995, lng: 120.9842 }
+    const atHome = location && country === homeCountryRef.current
+    const center = atHome ? location : getCountryInfo(country).center
     const map = new google.maps.Map(mapRef.current, {
-      center, zoom: location ? 13 : 11,
+      center, zoom: atHome ? 13 : 7,
       mapTypeControl: false, streetViewControl: false,
       fullscreenControl: false, zoomControl: false,
     })
@@ -304,9 +348,43 @@ export default function HomePage() {
 
       <div className={styles.mapOverlay}>
         {locationError && <div className={styles.locationError}>{locationError}</div>}
-        <button className={styles.locateBtn} onClick={handleLocateMe} disabled={locating}>
-          {locating ? 'Locating...' : '📍 Find my location'}
-        </button>
+        <div className={styles.countryRow}>
+          <button className={styles.locateBtn} onClick={handleLocateMe} disabled={locating}>
+            {locating ? 'Locating...' : '📍 Find my location'}
+          </button>
+
+          {/* Country switcher — mirrors the mobile app's flag+code button */}
+          <div className={styles.countryWrap}>
+            <button
+              className={styles.locateBtn}
+              onClick={() => setCountryPickerOpen(o => !o)}
+            >
+              {getCountryInfo(country).flag} {country} ▾
+            </button>
+            {countryPickerOpen && (
+              <>
+                {/* Invisible backdrop to close the menu on outside click,
+                    matching the mobile picker's tap-to-dismiss overlay. */}
+                <div
+                  className={styles.countryBackdrop}
+                  onClick={() => setCountryPickerOpen(false)}
+                />
+                <div className={styles.countryMenu}>
+                  {COUNTRIES.map(c => (
+                    <button
+                      key={c.code}
+                      onClick={() => handleSelectCountry(c.code)}
+                      className={`${styles.countryOption} ${c.code === country ? styles.countryOptionActive : ''}`}
+                    >
+                      <span>{c.flag} {c.label}</span>
+                      {c.code === country && <span>✓</span>}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
       </div>
 
       <div
