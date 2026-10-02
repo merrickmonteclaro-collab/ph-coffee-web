@@ -227,20 +227,26 @@
   transition: box-shadow 0.15s;
 }
 .card:hover { box-shadow: 0 2px 8px rgba(84,41,22,0.1); }
-.cardImg {
+/* A plain div, unlike an <img>, has no intrinsic aspect ratio — so it
+   stretches correctly to match the card's actual (content-driven) height.
+   The <img> itself is absolutely positioned to fill this wrapper instead of
+   being sized directly, which stops it from forcing the row open to its own
+   fetched-image aspect ratio (72x110) regardless of how tall the text is. */
+.cardImgWrap {
   width: 72px;
-  /* Explicit height, not 'auto': a browser <img> otherwise sizes itself
-     from the fetched image's intrinsic ratio (now 72x110, since we request
-     a taller thumbnail for sharpness) and ignores the flex row's
-     align-items: stretch. This keeps displayed size tied to the card's
-     actual height, independent of whatever size we fetch for quality. */
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.cardImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
   height: 100%;
   object-fit: cover;
-  flex-shrink: 0;
 }
 .cardImgPlaceholder {
   width: 72px;
-  height: 100%;
   background: var(--bg-sand);
   display: flex;
   align-items: center;
