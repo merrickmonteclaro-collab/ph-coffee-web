@@ -445,7 +445,11 @@ export default function HomePage() {
               <Link to={'/shop/' + shop.id} key={shop.id} className={styles.card}>
                 {shop.photo_url && shop.photo_url !== 'string' ? (
                   <img
-                    src={getOptimizedImageUrl(shop.photo_url, Math.round(72 * DPR), Math.round(76 * DPR))}
+                    // Request a bit taller than the single-line card height
+                    // (76) so two-line shop names, which stretch this image
+                    // taller, still get a sharp source image instead of
+                    // upscaling a 76px-tall fetch. Matches the mobile fix.
+                    src={getOptimizedImageUrl(shop.photo_url, Math.round(72 * DPR), Math.round(110 * DPR))}
                     alt={shop.name}
                     className={styles.cardImg}
                     loading="lazy"
