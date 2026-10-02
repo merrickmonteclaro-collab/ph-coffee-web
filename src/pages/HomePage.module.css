@@ -229,11 +229,18 @@
 .card:hover { box-shadow: 0 2px 8px rgba(84,41,22,0.1); }
 .cardImg {
   width: 72px;
+  /* Explicit height, not 'auto': a browser <img> otherwise sizes itself
+     from the fetched image's intrinsic ratio (now 72x110, since we request
+     a taller thumbnail for sharpness) and ignores the flex row's
+     align-items: stretch. This keeps displayed size tied to the card's
+     actual height, independent of whatever size we fetch for quality. */
+  height: 100%;
   object-fit: cover;
   flex-shrink: 0;
 }
 .cardImgPlaceholder {
   width: 72px;
+  height: 100%;
   background: var(--bg-sand);
   display: flex;
   align-items: center;
