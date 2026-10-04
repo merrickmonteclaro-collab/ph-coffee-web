@@ -408,7 +408,7 @@ export default function HomePage() {
           <div className={styles.brandRow}>
             <div>
               <div className={styles.brandName}>Brewpack</div>
-              <div className={styles.brandTagline}>find. sip. explore.</div>
+              <div className={styles.brandTagline}>Your GPS to good coffee</div>
             </div>
           </div>
         </div>
