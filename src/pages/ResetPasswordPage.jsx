@@ -33,7 +33,10 @@ export default function ResetPasswordPage() {
       })
 
       const data = await res.json()
-      if (!res.ok) throw new Error(data.detail || 'Something went wrong')
+      if (!res.ok) {
+        // 422 validation errors come back as an array, not a string.
+        throw new Error(typeof data.detail === 'string' ? data.detail : 'Something went wrong')
+      }
 
       setSuccess(true)
       setTimeout(() => navigate('/auth'), 2500)

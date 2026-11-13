@@ -23,7 +23,14 @@ export default function ForgotPasswordPage() {
 
       if (!res.ok) {
         const data = await res.json()
-        throw new Error(data.detail || 'Something went wrong')
+        // 422 validation errors come back as an array, not a string.
+        throw new Error(
+          typeof data.detail === 'string'
+            ? data.detail
+            : res.status === 422
+              ? 'Enter a valid email address'
+              : 'Something went wrong'
+        )
       }
 
       // Backend always returns a generic success message whether or not
