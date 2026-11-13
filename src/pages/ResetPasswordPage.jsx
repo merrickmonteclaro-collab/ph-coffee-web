@@ -10,6 +10,7 @@ export default function ResetPasswordPage() {
 
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -82,7 +83,7 @@ export default function ResetPasswordPage() {
             <label className={styles.label}>New Password</label>
             <input
               className={styles.input}
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               placeholder="••••••••"
               value={password}
               onChange={e => setPassword(e.target.value)}
@@ -93,13 +94,34 @@ export default function ResetPasswordPage() {
             <label className={styles.label}>Confirm New Password</label>
             <input
               className={styles.input}
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               placeholder="••••••••"
               value={confirmPassword}
               onChange={e => setConfirmPassword(e.target.value)}
               autoComplete="new-password"
               required
             />
+
+            {/* One toggle controls both fields. type="button" so it never
+                submits the form. */}
+            <button
+              type="button"
+              onClick={() => setShowPassword(s => !s)}
+              aria-pressed={showPassword}
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: 0,
+                marginBottom: 14,
+                color: 'var(--terracotta)',
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: 'pointer',
+                fontFamily: 'inherit'
+              }}
+            >
+              {showPassword ? '🙈 Hide passwords' : '👁 Show passwords'}
+            </button>
 
             <button className={styles.btn} type="submit" disabled={loading}>
               {loading ? 'Please wait...' : 'Reset Password'}
