@@ -276,7 +276,7 @@ export default function ShopPage() {
             onClick={toggleFavorite}
             disabled={favoriteLoading}
           >
-            {isFavorited ? '❤️ Remove from Favorites' : '🤍 Add to Favorites'}
+            {isFavorited ? 'Remove from Favorites' : 'Add to Favorites'}
           </button>
         )}
       </div>
