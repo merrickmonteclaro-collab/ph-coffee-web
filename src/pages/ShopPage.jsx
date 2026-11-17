@@ -200,14 +200,6 @@ export default function ShopPage() {
             >
               {isVisited ? '✓ Visited' : 'Mark as Visited'}
             </button>
-            <button
-              className={styles.favoriteBtn + ' ' + (isFavorited ? styles.favoriteBtnActive : '')}
-              onClick={toggleFavorite}
-              disabled={favoriteLoading}
-              aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
-            >
-              {isFavorited ? '❤️' : '🤍'}
-            </button>
           </div>
         )}
 
@@ -276,6 +268,16 @@ export default function ShopPage() {
 
         {mapsUrl && (
           <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className={styles.mapsBtn}>Open in Google Maps →</a>
+        )}
+
+        {getToken() && (
+          <button
+            className={styles.favoritesBtn + ' ' + (isFavorited ? styles.favoritesBtnActive : '')}
+            onClick={toggleFavorite}
+            disabled={favoriteLoading}
+          >
+            {isFavorited ? '❤️ Remove from Favorites' : '🤍 Add to Favorites'}
+          </button>
         )}
       </div>
     </div>
