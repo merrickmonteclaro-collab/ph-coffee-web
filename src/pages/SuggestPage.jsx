@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useLocation } from 'react-router-dom'
 import { API_URL } from '../utils/config'
 import styles from './SuggestPage.module.css'
 
@@ -12,7 +13,13 @@ const REPORT_TYPES = [
 const MAX_PHOTOS = 3
 
 export default function SuggestPage() {
-  const [mode, setMode] = useState('new')
+  // Set by the Shop page's "Report a Change" button. Used only as the initial
+  // state, so the page opens on that tab with the shop already selected
+  // (no flash of the New Shop form first). Without it, behavior is unchanged.
+  const location = useLocation()
+  const reportShop = location.state?.reportShop || null
+
+  const [mode, setMode] = useState(reportShop ? 'report' : 'new')
 
   // ── New shop suggestion state ──
   const [form, setForm] = useState({ shop_name: '', address: '', city: '', region: '', notes: '', facebook_url: '', instagram_url: '' })
@@ -22,7 +29,7 @@ export default function SuggestPage() {
   // ── Report a change state ──
   const [shops, setShops] = useState([])
   const [shopSearch, setShopSearch] = useState('')
-  const [selectedShop, setSelectedShop] = useState(null)
+  const [selectedShop, setSelectedShop] = useState(reportShop)
   const [reportType, setReportType] = useState('')
   const [reportDetails, setReportDetails] = useState('')
   const [reportLoading, setReportLoading] = useState(false)

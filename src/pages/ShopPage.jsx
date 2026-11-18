@@ -279,6 +279,17 @@ export default function ShopPage() {
             {isFavorited ? 'Remove from Favorites' : 'Add to Favorites'}
           </button>
         )}
+
+        {/* Opens the Suggest page on "Report a Change" with this shop preselected. */}
+        <p className={styles.reportPrompt}>Is the shop information outdated? Let us know!</p>
+        <button
+          className={styles.reportBtn}
+          onClick={() => navigate('/suggest', {
+            state: { reportShop: { id: shop.id, name: shop.name, city: shop.city, region: shop.region } }
+          })}
+        >
+          Report a Change
+        </button>
       </div>
     </div>
   )
