@@ -12,7 +12,7 @@ export function removeToken() {
 
 export async function authFetch(url, options = {}) {
   const token = getToken();
-  return fetch(url, {
+  const response = await fetch(url, {
     ...options,
     headers: {
       ...options.headers,
@@ -20,4 +20,15 @@ export async function authFetch(url, options = {}) {
       'Content-Type': 'application/json',
     },
   });
+
+  // A 401 means the saved token is expired or no longer valid (24h expiry,
+  // or the server's signing key was rotated). Clear it so the app stops
+  // treating the user as logged in and they're asked to log in again.
+  // Only clear if the saved token is still the one this request used, so a
+  // slow 401 can't wipe a token the user just got by logging in again.
+  if (response.status === 401 && getToken() === token) {
+    removeToken();
+  }
+
+  return response;
 }
