@@ -45,22 +45,13 @@ export default function ForgotPasswordPage() {
   return (
     <div className={styles.page}>
       <div className={styles.card}>
-        <h1 className={styles.title}>☕ Brewpack</h1>
+        <h1 className={styles.title}>Brewpack</h1>
         <p className={styles.subtitle}>Reset your password</p>
 
         {error && <div className={styles.error}>{error}</div>}
 
         {sent ? (
-          <div
-            style={{
-              background: '#d8f3dc',
-              color: '#2d6a4f',
-              borderRadius: 8,
-              padding: '10px 14px',
-              fontSize: 13,
-              marginBottom: 12
-            }}
-          >
+          <div className={styles.success}>
             If that email is registered, a reset link has been sent. Check your inbox.
           </div>
         ) : (

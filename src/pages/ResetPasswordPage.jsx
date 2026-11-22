@@ -50,7 +50,7 @@ export default function ResetPasswordPage() {
     return (
       <div className={styles.page}>
         <div className={styles.card}>
-          <h1 className={styles.title}>☕ Brewpack</h1>
+          <h1 className={styles.title}>Brewpack</h1>
           <div className={styles.error}>This reset link is invalid or incomplete.</div>
           <Link to="/forgot-password" className={styles.toggle}>
             Request a new reset link
@@ -63,22 +63,13 @@ export default function ResetPasswordPage() {
   return (
     <div className={styles.page}>
       <div className={styles.card}>
-        <h1 className={styles.title}>☕ Brewpack</h1>
+        <h1 className={styles.title}>Brewpack</h1>
         <p className={styles.subtitle}>Set a new password</p>
 
         {error && <div className={styles.error}>{error}</div>}
 
         {success ? (
-          <div
-            style={{
-              background: '#d8f3dc',
-              color: '#2d6a4f',
-              borderRadius: 8,
-              padding: '10px 14px',
-              fontSize: 13,
-              marginBottom: 12
-            }}
-          >
+          <div className={styles.success}>
             Password updated! Redirecting you to log in...
           </div>
         ) : (
@@ -111,17 +102,7 @@ export default function ResetPasswordPage() {
               type="button"
               onClick={() => setShowPassword(s => !s)}
               aria-pressed={showPassword}
-              style={{
-                background: 'none',
-                border: 'none',
-                padding: 0,
-                marginBottom: 14,
-                color: 'var(--terracotta)',
-                fontSize: 13,
-                fontWeight: 600,
-                cursor: 'pointer',
-                fontFamily: 'inherit'
-              }}
+              className={styles.showBtn}
             >
               {showPassword ? '🙈 Hide passwords' : '👁 Show passwords'}
             </button>

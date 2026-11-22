@@ -40,7 +40,12 @@ export default function AuthPage() {
       }
 
       const data = await res.json()
-      if (!res.ok) throw new Error(data.detail || 'Something went wrong')
+      // 422 validation errors come back as an array, not a string.
+      if (!res.ok) throw new Error(
+        typeof data.detail === 'string'
+          ? data.detail
+          : res.status === 422 ? 'Please check your details and try again' : 'Something went wrong'
+      )
       saveToken(data.access_token)
       navigate('/account')
     } catch (e) {
@@ -52,7 +57,7 @@ export default function AuthPage() {
   return (
     <div className={styles.page}>
       <div className={styles.card}>
-        <h1 className={styles.title}>☕ Brewpack</h1>
+        <h1 className={styles.title}>Brewpack</h1>
         <p className={styles.subtitle}>{isLogin ? 'Welcome back!' : 'Create an account'}</p>
 
         {error && <div className={styles.error}>{error}</div>}

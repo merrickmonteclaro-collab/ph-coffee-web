@@ -69,7 +69,11 @@ export default function AccountPage() {
   return (
     <div className={styles.page}>
       <div className={styles.header}>
-        <button className={styles.backBtn} onClick={() => navigate(-1)}>← Back</button>
+        <button className={styles.backBtn} onClick={() => navigate(-1)} aria-label="Back">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+            <path d="M19 12H5M11 6l-6 6 6 6" />
+          </svg>
+        </button>
         <h1 className={styles.headerTitle}>My Account</h1>
       </div>
 

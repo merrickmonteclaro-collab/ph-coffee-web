@@ -1,89 +1,92 @@
+/* Minimal direction. Shared by the Log in, Register, Forgot password and
+   Reset password pages. Colors are scoped via --h-* variables. */
 .page {
+  --h-bg: #FBF8F3;
+  --h-ink: #3B2417;
+  --h-muted: #6F5F54;
+  --h-accent: #8A4B2A;
+  --h-line: #E7DDCE;
   min-height: calc(100vh - var(--tab-height));
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: var(--bg);
+  background: var(--h-bg);
+  color: var(--h-ink);
+  font-family: 'DM Sans', sans-serif;
 }
-.card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 32px 24px;
-  width: 100%;
-  max-width: 380px;
-}
-.title {
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-size: 26px;
-  font-weight: 700;
-  color: var(--terracotta);
-  text-align: center;
-  margin-bottom: 4px;
-}
-.subtitle {
-  font-size: 14px;
-  color: var(--brown-muted);
-  text-align: center;
-  margin-bottom: 24px;
-}
+.card { width: 100%; max-width: 380px; }
+.title { margin: 0 0 4px; font-size: 28px; font-weight: 700; line-height: 1.1; color: var(--h-ink); }
+.subtitle { margin: 0 0 24px; font-size: 14px; color: var(--h-muted); }
 .label {
   display: block;
+  margin: 16px 0 6px;
   font-size: 11px;
   font-weight: 600;
-  color: #88b8ce;
   letter-spacing: 1px;
   text-transform: uppercase;
-  margin-bottom: 6px;
-  margin-top: 14px;
+  color: var(--h-muted);
 }
 .input {
   width: 100%;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px 14px;
-  font-size: 14px;
-  color: var(--brown);
-  font-family: 'DM Sans', sans-serif;
-  outline: none;
+  height: 48px;
   box-sizing: border-box;
+  padding: 0 14px;
+  border: 1px solid var(--h-line);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--h-ink);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  outline: none;
 }
-.input:focus { border-color: var(--terracotta); }
+.input:focus { border-color: var(--h-muted); }
+.input::placeholder { color: var(--h-muted); }
 .btn {
   width: 100%;
-  background: var(--terracotta);
-  color: var(--white);
+  height: 48px;
+  margin-top: 24px;
   border: none;
-  border-radius: 10px;
-  padding: 14px;
-  font-size: 15px;
-  font-weight: 600;
+  border-radius: 12px;
+  background: var(--h-accent);
+  color: #fff;
   font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
   cursor: pointer;
-  margin-top: 20px;
   transition: opacity 0.15s;
 }
-.btn:hover:not(:disabled) { opacity: 0.88; }
+.btn:hover:not(:disabled) { opacity: 0.9; }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .toggle {
   display: block;
   width: 100%;
-  background: none;
+  min-height: 44px;
+  margin-top: 8px;
+  padding: 0;
   border: none;
-  color: var(--terracotta);
-  font-size: 13px;
+  background: none;
+  color: var(--h-accent);
   font-family: 'DM Sans', sans-serif;
-  cursor: pointer;
-  margin-top: 16px;
+  font-size: 14px;
+  font-weight: 500;
   text-align: center;
+  text-decoration: none;
+  cursor: pointer;
 }
-.error {
-  background: var(--error-bg);
-  color: var(--error-text);
-  border-radius: 8px;
-  padding: 10px 14px;
+.toggle:hover { text-decoration: underline; }
+.error { margin-bottom: 8px; padding: 10px 14px; border-radius: 10px; background: var(--error-bg); color: var(--error-text); font-size: 13px; }
+.success { margin-bottom: 12px; padding: 10px 14px; border-radius: 10px; background: #E9EFE0; color: #3F5A26; font-size: 13px; }
+/* "Show passwords" toggle on the reset page */
+.showBtn {
+  min-height: 44px;
+  margin-bottom: 4px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--h-accent);
+  font-family: inherit;
   font-size: 13px;
-  margin-bottom: 8px;
+  font-weight: 600;
+  cursor: pointer;
 }

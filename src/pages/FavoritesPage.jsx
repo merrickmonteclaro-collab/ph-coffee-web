@@ -56,19 +56,19 @@ export default function FavoritesPage() {
         {loading ? (
           <div className={styles.empty}>Loading favorites...</div>
         ) : favorites.length === 0 ? (
-          <div className={styles.empty}>No favorites yet. Tap the heart on a shop to save it here.</div>
+          <div className={styles.empty}>No favorites yet. Open a shop and tap “Add to Favorites” to save it here.</div>
         ) : (
           favorites.map(shop => (
             <Link to={'/shop/' + shop.id} key={shop.id} className={styles.card}>
               {shop.photo_url && shop.photo_url !== 'string' ? (
                 <img
-                  src={getOptimizedImageUrl(shop.photo_url, Math.round(72 * DPR), Math.round(76 * DPR))}
-                  alt={shop.name}
+                  src={getOptimizedImageUrl(shop.photo_url, Math.round(56 * DPR), Math.round(56 * DPR))}
+                  alt=""
                   className={styles.cardImg}
                   loading="lazy"
                 />
               ) : (
-                <div className={styles.cardImgPlaceholder}>☕</div>
+                <div className={styles.cardImgPlaceholder} />
               )}
               <div className={styles.cardBody}>
                 <div className={styles.cardName}>{shop.name}</div>
