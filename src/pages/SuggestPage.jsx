@@ -4,10 +4,10 @@ import { API_URL } from '../utils/config'
 import styles from './SuggestPage.module.css'
 
 const REPORT_TYPES = [
-  { value: 'hours', label: '🕐 Hours Changed' },
-  { value: 'address', label: '📍 Address Changed' },
-  { value: 'closed', label: '🚫 Permanently Closed' },
-  { value: 'other', label: '✏️ Other' },
+  { value: 'hours', label: 'Hours changed' },
+  { value: 'address', label: 'Address changed' },
+  { value: 'closed', label: 'Permanently closed' },
+  { value: 'other', label: 'Other' },
 ]
 
 const MAX_PHOTOS = 3
@@ -165,11 +165,11 @@ export default function SuggestPage() {
         {photos.map((p, i) => (
           <div key={i} className={styles.photoThumbWrap}>
             <img src={p.previewUrl} alt="" className={styles.photoThumb} />
-            <button type="button" className={styles.photoRemoveBtn} onClick={() => removePhoto(photos, setPhotos, i)}>✕</button>
+            <button type="button" className={styles.photoRemoveBtn} aria-label="Remove photo" onClick={() => removePhoto(photos, setPhotos, i)}>✕</button>
           </div>
         ))}
         {photos.length < MAX_PHOTOS && (
-          <button type="button" className={styles.photoAddBtn} onClick={() => inputRef.current?.click()}>📷</button>
+          <button type="button" className={styles.photoAddBtn} onClick={() => inputRef.current?.click()} aria-label="Add photos">+</button>
         )}
         <input
           ref={inputRef}
@@ -202,7 +202,7 @@ export default function SuggestPage() {
 
   return (
     <div className={styles.page}>
-      <h1 className={styles.title}>Suggest a Shop ☕</h1>
+      <h1 className={styles.title}>Suggest a shop</h1>
       <p className={styles.sub}>Know a great specialty coffee shop we're missing, spotted an error, or have photos to share? Let us know!</p>
 
       <div className={styles.tabRow}>
@@ -283,7 +283,7 @@ export default function SuggestPage() {
                 <div className={styles.shopResultText}>{selectedShop.name}</div>
                 <div className={styles.shopResultSub}>{selectedShop.city}{selectedShop.region ? ` · ${selectedShop.region}` : ''}</div>
               </div>
-              <button type="button" className={styles.clearShopBtn} onClick={() => setSelectedShop(null)}>✕</button>
+              <button type="button" className={styles.clearShopBtn} aria-label="Clear shop" onClick={() => setSelectedShop(null)}>✕</button>
             </div>
           )}
 
@@ -344,7 +344,7 @@ export default function SuggestPage() {
                 <div className={styles.shopResultText}>{selectedPhotoShop.name}</div>
                 <div className={styles.shopResultSub}>{selectedPhotoShop.city}{selectedPhotoShop.region ? ` · ${selectedPhotoShop.region}` : ''}</div>
               </div>
-              <button type="button" className={styles.clearShopBtn} onClick={() => setSelectedPhotoShop(null)}>✕</button>
+              <button type="button" className={styles.clearShopBtn} aria-label="Clear shop" onClick={() => setSelectedPhotoShop(null)}>✕</button>
             </div>
           )}
 

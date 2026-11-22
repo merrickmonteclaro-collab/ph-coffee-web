@@ -11,7 +11,7 @@ import ResetPasswordPage from './pages/ResetPasswordPage'
 
 export default function App() {
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', position: 'relative', paddingBottom: 'var(--tab-height)' }}>
+    <div style={{ minHeight: '100vh', background: '#FBF8F3', position: 'relative', paddingBottom: 'var(--tab-height)' }}>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/favorites" element={<FavoritesPage />} />

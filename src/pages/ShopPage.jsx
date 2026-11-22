@@ -21,7 +21,7 @@ function getOptimizedImageUrl(url, width, height) {
 // over-fetching on mobile.
 const DPR = Math.min(window.devicePixelRatio || 1, 3)
 const PHOTO_WIDTH = Math.round(Math.min(window.innerWidth, 1600) * DPR)
-const HERO_HEIGHT = Math.round(220 * DPR)
+const HERO_HEIGHT = Math.round(240 * DPR)
 const GALLERY_HEIGHT = Math.round(240 * DPR)
 
 export default function ShopPage() {
@@ -148,6 +148,8 @@ export default function ShopPage() {
   const openStatus = getOpenStatus()
   const parsedHours = shop.operating_hours ? (() => { try { return JSON.parse(shop.operating_hours) } catch { return null } })() : null
   
+  // `icon` isn't rendered in the Minimal layout; kept for the upcoming
+  // amenity/filter icon set.
   const allAmenities = [
     { label: 'WiFi', value: shop.has_wifi, icon: '📶' },
     { label: 'Work Friendly', value: shop.is_work_friendly, icon: '💻' },
@@ -162,6 +164,12 @@ export default function ShopPage() {
 
   return (
     <div className={styles.page}>
+      <div className={styles.heroWrap}>
+      <button className={styles.backBtn} onClick={() => navigate(-1)} aria-label="Back">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+          <path d="M19 12H5M11 6l-6 6 6 6" />
+        </svg>
+      </button>
       {photos.length > 0 ? (
         <div className={styles.photoGallery}>
           {photos.map(p => (
@@ -181,14 +189,13 @@ export default function ShopPage() {
           className={styles.hero}
         />
       ) : (
-        <div className={styles.heroPlaceholder}>☕</div>
+        <div className={styles.heroPlaceholder} />
       )}
+      </div>
 
       <div className={styles.content}>
-        <button className={styles.backBtn} onClick={() => navigate(-1)}>← Back</button>
-
         <h1 className={styles.name}>{shop.name}</h1>
-        <p className={styles.address}>📍 {shop.address}</p>
+        <p className={styles.address}>{shop.address}</p>
         <p className={styles.cityRegion}>{shop.city} · {shop.region}</p>
 
         {getToken() && (
@@ -206,13 +213,13 @@ export default function ShopPage() {
         {(shop.facebook_url || shop.instagram_url || shop.website_url) && (
           <div className={styles.socialRow}>
             {shop.facebook_url && (
-              <a href={shop.facebook_url} target="_blank" rel="noopener noreferrer" className={styles.socialBtn}>📘 Facebook</a>
+              <a href={shop.facebook_url} target="_blank" rel="noopener noreferrer" className={styles.socialBtn}>Facebook</a>
             )}
             {shop.instagram_url && (
-              <a href={shop.instagram_url} target="_blank" rel="noopener noreferrer" className={styles.socialBtn}>📷 Instagram</a>
+              <a href={shop.instagram_url} target="_blank" rel="noopener noreferrer" className={styles.socialBtn}>Instagram</a>
             )}
             {shop.website_url && (
-              <a href={shop.website_url} target="_blank" rel="noopener noreferrer" className={styles.socialBtn}>🌐 Website</a>
+              <a href={shop.website_url} target="_blank" rel="noopener noreferrer" className={styles.socialBtn}>Website</a>
             )}
           </div>
         )}
@@ -220,10 +227,11 @@ export default function ShopPage() {
         {parsedHours && (
           <div className={styles.section}>
             <div className={styles.hoursHeader}>
-              <div className={styles.sectionTitle}>🕐 Operating Hours</div>
+              <div className={styles.sectionTitle}>Hours</div>
               {openStatus && (
                 <div className={styles.openBadge + ' ' + (openStatus.isOpen ? styles.openBadgeOpen : styles.openBadgeClosed)}>
-                  {openStatus.isOpen ? '● Open Now' : '● Closed'}
+                  <span className={styles.openDot} aria-hidden="true" />
+                  {openStatus.isOpen ? 'Open now' : 'Closed'}
                 </div>
               )}
             </div>
@@ -232,7 +240,7 @@ export default function ShopPage() {
               if (!d) return null
               const isToday = openStatus?.today === day
               return (
-                <div key={day} className={styles.hoursRow + ' ' + (isToday ? styles.hoursRowToday : '')}>
+                <div key={day} className={styles.hoursRow}>
                   <span className={styles.hoursDay + ' ' + (isToday ? styles.hoursDayToday : '')}>{day}</span>
                   <span className={styles.hoursTime + ' ' + (isToday ? styles.hoursTimeToday : '')}>
                     {d.closed ? 'Closed' : formatTime(d.open) + ' – ' + formatTime(d.close)}
@@ -245,7 +253,7 @@ export default function ShopPage() {
 
         {offerings.length > 0 && (
           <div className={styles.section}>
-            <div className={styles.sectionTitle}>☕ Coffee Offerings</div>
+            <div className={styles.sectionTitle}>Coffee offerings</div>
             <div className={styles.offeringTags}>
               {offerings.map(o => <span key={o} className={styles.offeringTag}>{o}</span>)}
             </div>
@@ -254,12 +262,11 @@ export default function ShopPage() {
 
         {allAmenities.length > 0 && (
           <div className={styles.section}>
-            <div className={styles.sectionTitle}>✦ Amenities</div>
+            <div className={styles.sectionTitle}>Amenities</div>
             <div className={styles.amenityGrid}>
               {allAmenities.map(a => (
                 <div key={a.label} className={styles.iconChip}>
-                  <span>{a.icon}</span>
-                  <span>{a.label}</span>
+                  {a.label}
                 </div>
               ))}
             </div>
@@ -267,7 +274,7 @@ export default function ShopPage() {
         )}
 
         {mapsUrl && (
-          <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className={styles.mapsBtn}>Open in Google Maps →</a>
+          <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className={styles.mapsBtn}>Open in Google Maps</a>
         )}
 
         {getToken() && (
