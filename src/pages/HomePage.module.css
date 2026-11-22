@@ -1,7 +1,17 @@
+/* Minimal direction. Colors are scoped to this page via --h-* variables so
+   the rest of the web app keeps its current look. */
 .container {
+  --h-bg: #FBF8F3;
+  --h-ink: #3B2417;
+  --h-muted: #6F5F54;
+  --h-accent: #8A4B2A;
+  --h-line: #E7DDCE;
+  --h-thumb: #E3D5C0;
   height: calc(100vh - var(--tab-height));
   position: relative;
   overflow: hidden;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--h-ink);
 }
 .map {
   position: absolute;
@@ -13,6 +23,8 @@
   height: 100%;
   z-index: 0;
 }
+
+/* ── Floating "Find my location" ───────────────────────── */
 .mapOverlay {
   position: absolute;
   top: 16px;
@@ -24,93 +36,47 @@
   gap: 8px;
 }
 .locateBtn {
-  background: var(--terracotta);
-  color: #fff;
-  border: none;
-  border-radius: 20px;
-  padding: 10px 16px;
+  height: 44px;
+  padding: 0 18px;
+  background: var(--h-bg);
+  color: var(--h-ink);
+  border: 1px solid var(--h-line);
+  border-radius: 22px;
   font-family: 'DM Sans', sans-serif;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 10px rgba(59, 36, 23, 0.12);
   white-space: nowrap;
 }
-.locateBtn:hover:not(:disabled) { opacity: 0.9; }
+.locateBtn:hover:not(:disabled) { border-color: var(--h-accent); color: var(--h-accent); }
 .locateBtn:disabled { opacity: 0.6; cursor: not-allowed; }
 .locationError {
-  background: var(--white);
+  background: var(--h-bg);
   color: var(--error-text);
+  border: 1px solid var(--h-line);
   border-radius: 10px;
   padding: 8px 12px;
   font-size: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
   max-width: 220px;
   text-align: right;
 }
-.countryRow {
-  display: flex;
-  gap: 8px;
-  align-items: flex-start;
-}
-.countryWrap {
-  position: relative;
-}
-.countryBackdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 9;
-}
-.countryMenu {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  margin-top: 6px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-  min-width: 160px;
-  overflow: hidden;
-  z-index: 10;
-}
-.countryOption {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  padding: 10px 14px;
-  border: none;
-  background: transparent;
-  color: var(--brown);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  text-align: left;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-.countryOption:hover {
-  background: var(--bg-sand);
-}
-.countryOptionActive {
-  background: var(--bg-sand);
-  font-weight: 600;
-}
+
+/* ── Bottom sheet ──────────────────────────────────────── */
+/* No overflow:hidden here on purpose: the country bubbles rise above the
+   sheet's top edge. The container still clips anything off-screen. */
 .bottomSheet {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 100%;
-  background: var(--bg);
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  box-shadow: 0 -4px 24px rgba(0,0,0,0.18);
-  padding: 12px 16px 0;
+  background: var(--h-bg);
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -2px 20px rgba(59, 36, 23, 0.10);
+  padding: 12px 24px 0;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   will-change: transform;
   z-index: 10;
 }
@@ -120,88 +86,198 @@
   touch-action: none;
   user-select: none;
 }
-.handleArea:active {
-  cursor: grabbing;
-}
+.handleArea:active { cursor: grabbing; }
 .handle {
   width: 36px;
-  height: 3px;
-  background: var(--bg-sand);
+  height: 4px;
+  background: #DDD2C2;
   border-radius: 2px;
-  align-self: center;
-  margin-bottom: 10px;
+  margin: 0 auto 16px;
   flex-shrink: 0;
 }
 .brandRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   flex-shrink: 0;
 }
 .brandName {
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-size: 30px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 28px;
   font-weight: 700;
-  color: var(--terracotta);
+  color: var(--h-ink);
   line-height: 1;
 }
+.brandText { min-width: 0; }
 .brandTagline {
-  font-size: 11px;
-  font-weight:600;
-  color: #88b8ce;
-  letter-spacing: 1px;
-  margin-top: 2px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--h-ink);
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.search {
-  width: 100%;
-  background: var(--bg-card);
-  border-radius: 10px;
-  padding: 10px 14px;
-  font-size: 14px;
-  color: var(--brown);
-  border: 1px solid var(--border);
-  outline: none;
-  margin-bottom: 10px;
-  font-family: 'DM Sans', sans-serif;
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   flex-shrink: 0;
 }
-.search::placeholder { color: var(--brown-muted); }
+.accountBtn {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--h-line);
+  border-radius: 50%;
+  color: var(--h-ink);
+  transition: border-color 0.15s, color 0.15s;
+}
+.accountBtn:hover { border-color: var(--h-accent); color: var(--h-accent); }
+
+/* ── Country switcher: bubbles pop up above the button ─── */
+.countryWrap {
+  position: relative;
+  flex-shrink: 0;
+}
+.countryBtn {
+  height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--h-line);
+  border-radius: 22px;
+  background: transparent;
+  color: var(--h-ink);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.countryBtn:hover,
+.countryBtnOpen { border-color: var(--h-accent); color: var(--h-accent); }
+
+.bubbles {
+  position: absolute;
+  display: flex;
+  gap: 10px;
+  pointer-events: none;
+  z-index: 20;
+}
+.bubblesUp {
+  left: 50%;
+  bottom: 100%;
+  margin-bottom: 12px;
+  flex-direction: column-reverse;
+  transform: translateX(-50%);
+}
+/* Fallback when the sheet is pulled up and there's no room above. */
+.bubblesLeft {
+  right: 100%;
+  top: 50%;
+  margin-right: 12px;
+  flex-direction: row-reverse;
+  transform: translateY(-50%);
+}
+.bubble {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 1px solid var(--h-line);
+  background: var(--h-bg);
+  color: var(--h-ink);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(59, 36, 23, 0.14);
+  /* closed: shrunk toward the button and hidden (visibility keeps them out
+     of the tab order once the close animation ends) */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(18px) scale(0.4);
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s linear 0.18s;
+}
+.bubblesLeft .bubble { transform: translateX(18px) scale(0.4); }
+.bubble:hover { border-color: var(--h-accent); color: var(--h-accent); }
+/* open: spring out one after another, nearest bubble first */
+.bubblesOpen .bubble {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: none;
+  transition: opacity 0.22s ease, transform 0.42s cubic-bezier(0.34, 1.56, 0.64, 1), visibility 0s;
+  transition-delay: calc(var(--i) * 70ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .bubble,
+  .bubblesOpen .bubble { transition: none; }
+}
+
+/* ── Search ────────────────────────────────────────────── */
+.search {
+  width: 100%;
+  height: 48px;
+  box-sizing: border-box;
+  margin: 8px 0 4px;
+  padding: 0 14px 0 42px;
+  border: 1px solid var(--h-line);
+  border-radius: 12px;
+  background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%236F5F54' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-4-4'/%3E%3C/svg%3E") no-repeat 14px center;
+  color: var(--h-ink);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  outline: none;
+  flex-shrink: 0;
+}
+.search:focus { border-color: var(--h-muted); }
+.search::placeholder { color: var(--h-muted); }
+
+/* ── Filters: text tabs, underline when active ─────────── */
 .filterScroll {
   display: flex;
-  gap: 8px;
+  gap: 20px;
+  align-items: center;
+  height: 44px;
   overflow-x: auto;
-  padding-bottom: 10px;
   flex-shrink: 0;
   scrollbar-width: none;
 }
 .filterScroll::-webkit-scrollbar { display: none; }
 .chip {
-  white-space: nowrap;
-  padding: 6px 14px;
-  border-radius: 20px;
-  border: 1px solid #88b8ce;
-  background: #88b8ce;
-  color: #FFEEBC;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.15s;
   flex-shrink: 0;
+  height: 44px;
+  padding: 0;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--h-muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
 }
+.chip:hover { color: var(--h-ink); }
 .chipActive {
-  background: var(--terracotta);
-  border-color: var(--terracotta);
-  color: #FFEEBC;
+  color: var(--h-ink);
+  font-weight: 700;
+  border-bottom-color: var(--h-accent);
 }
 .sectionLabel {
-  font-size: 10px;
-  color: #88b8ce;
-  letter-spacing: 1px;
+  font-size: 11px;
   font-weight: 600;
-  margin-bottom: 10px;
+  letter-spacing: 1px;
+  color: var(--h-muted);
+  margin: 12px 0 4px;
   flex-shrink: 0;
 }
+
+/* ── Shop rows: hairline-separated, no card boxes ──────── */
 .list {
   flex: 1;
   overflow-y: auto;
@@ -209,79 +285,56 @@
 }
 .empty {
   text-align: center;
-  color: var(--brown-muted);
+  color: var(--h-muted);
   padding: 40px 0;
   font-size: 14px;
 }
 .card {
   display: flex;
-  /* 'stretch' (not 'center') lets the image grow to match the card's actual
-     height — which varies when a shop name wraps to two lines — instead of
-     staying a fixed 76px and leaving a visible gap above/below it. */
-  align-items: stretch;
-  background: var(--bg-card);
-  border-radius: 12px;
-  margin-bottom: 10px;
-  border: 1px solid var(--border);
-  overflow: hidden;
-  gap: 0;
-  transition: box-shadow 0.15s;
-}
-.card:hover { box-shadow: 0 2px 8px rgba(84,41,22,0.1); }
-/* A plain div, unlike an <img>, has no intrinsic aspect ratio — so it
-   stretches correctly to match the card's actual (content-driven) height.
-   The <img> itself is absolutely positioned to fill this wrapper instead of
-   being sized directly, which stops it from forcing the row open to its own
-   fetched-image aspect ratio (72x110) regardless of how tall the text is. */
-.cardImgWrap {
-  width: 72px;
-  position: relative;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-.cardImg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.cardImgPlaceholder {
-  width: 72px;
-  background: var(--bg-sand);
-  display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  flex-shrink: 0;
+  gap: 14px;
+  min-height: 80px;
+  padding: 12px 0;
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--h-line);
+  color: inherit;
+  text-decoration: none;
 }
+.card:hover .cardName { color: var(--h-accent); }
+.cardImg,
+.cardImgPlaceholder {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  flex: none;
+  background: var(--h-thumb);
+}
+.cardImg { object-fit: cover; display: block; }
 .cardBody {
   flex: 1;
   min-width: 0;
-  padding: 10px 12px;
 }
 .cardName {
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
-  color: var(--brown);
-  margin-bottom: 1px;
+  color: var(--h-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.15s;
+}
+.cardLocation {
+  font-size: 13px;
+  color: var(--h-muted);
+  margin-top: 2px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.cardLocation {
-  font-size: 11px;
-  color: #88b8ce;
-  margin-bottom: 5px;
-}
-.cardTags { display: flex; gap: 5px; flex-wrap: wrap; }
-.tag { font-size: 13px; }
 .distance {
-  font-size: 11px;
-  color: var(--terracotta);
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--h-accent);
   white-space: nowrap;
   flex-shrink: 0;
-  padding-right: 12px;
 }
