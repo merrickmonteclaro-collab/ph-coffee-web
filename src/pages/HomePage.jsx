@@ -4,18 +4,19 @@ import { API_URL, GOOGLE_MAPS_KEY } from '../utils/config'
 import { getToken, authFetch } from '../utils/auth'
 import { getShops } from '../utils/shopsCache'
 import { COUNTRIES, DEFAULT_COUNTRY, detectCountry, getCountryInfo } from '../utils/countries'
+import AmenityIcon from '../components/AmenityIcon'
 import styles from './HomePage.module.css'
 
 const FILTERS = [
   { key: 'has_wifi', label: 'WiFi' },
-  { key: 'is_work_friendly', label: 'Work Friendly' },
-  { key: 'is_pet_friendly', label: 'Pet Friendly' },
+  { key: 'is_work_friendly', label: 'Work friendly' },
+  { key: 'is_pet_friendly', label: 'Pet friendly' },
   { key: 'has_meals', label: 'Meals' },
   { key: 'has_pastries', label: 'Pastries' },
-  { key: 'has_car_parking', label: 'Car Parking' },
-  { key: 'has_bike_parking', label: 'Bike Parking' },
-  { key: 'accepts_cards', label: 'Cards Accepted' },
-  { key: 'has_toilet_bidet', label: 'Toilet Bidet' },
+  { key: 'has_car_parking', label: 'Car parking' },
+  { key: 'has_bike_parking', label: 'Bike parking' },
+  { key: 'accepts_cards', label: 'Cards accepted' },
+  { key: 'has_toilet_bidet', label: 'Toilet bidet' },
 ]
 
 // Short labels for the one-line amenity summary under each shop name.
@@ -499,8 +500,10 @@ export default function HomePage() {
               key={f.key}
               className={`${styles.chip} ${activeFilters.includes(f.key) ? styles.chipActive : ''}`}
               onClick={() => toggleFilter(f.key)}
+              aria-pressed={activeFilters.includes(f.key)}
             >
-              {f.label}
+              <AmenityIcon name={f.key} size={26} />
+              <span>{f.label}</span>
             </button>
           ))}
         </div>

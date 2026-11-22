@@ -95,8 +95,8 @@
 .hoursDayToday, .hoursTimeToday { color: var(--h-ink); font-weight: 700; }
 
 /* chips: outlined, no fill */
-.offeringTags, .amenityGrid { display: flex; flex-wrap: wrap; gap: 8px; }
-.offeringTag, .iconChip {
+.offeringTags { display: flex; flex-wrap: wrap; gap: 8px; }
+.offeringTag {
   display: inline-flex;
   align-items: center;
   height: 32px;
@@ -105,6 +105,19 @@
   border-radius: 16px;
   font-size: 13px;
   color: var(--h-ink);
+}
+
+/* amenities: outline icon over its label, four across */
+.amenityGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 8px; }
+.amenityItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--h-ink);
+  font-size: 12px;
+  line-height: 1.25;
+  text-align: center;
 }
 
 /* ── Actions at the bottom ─────────────────────────────── */

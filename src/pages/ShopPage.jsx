@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { API_URL } from '../utils/config'
 import { getToken, authFetch } from '../utils/auth'
+import AmenityIcon from '../components/AmenityIcon'
 import styles from './ShopPage.module.css'
 
 // Inserts Cloudinary transformation params into an upload URL so the CDN
@@ -148,18 +149,17 @@ export default function ShopPage() {
   const openStatus = getOpenStatus()
   const parsedHours = shop.operating_hours ? (() => { try { return JSON.parse(shop.operating_hours) } catch { return null } })() : null
   
-  // `icon` isn't rendered in the Minimal layout; kept for the upcoming
-  // amenity/filter icon set.
+  // `key` picks the outline icon in AmenityIcon; labels match the Home filters.
   const allAmenities = [
-    { label: 'WiFi', value: shop.has_wifi, icon: '📶' },
-    { label: 'Work Friendly', value: shop.is_work_friendly, icon: '💻' },
-    { label: 'Pet Friendly', value: shop.is_pet_friendly, icon: '🐾' },
-    { label: 'Full Meals', value: shop.has_meals, icon: '🍽️' },
-    { label: 'Pastries', value: shop.has_pastries, icon: '🥐' },
-    { label: 'Car Parking', value: shop.has_car_parking, icon: '🚗' },
-    { label: 'Bike Parking', value: shop.has_bike_parking, icon: '🚲' },
-    { label: 'Cards Accepted', value: shop.accepts_cards, icon: '💳' },
-    { label: 'Toilet Bidet', value: shop.has_toilet_bidet, icon: '🚿' },
+    { key: 'has_wifi', label: 'WiFi', value: shop.has_wifi },
+    { key: 'is_work_friendly', label: 'Work friendly', value: shop.is_work_friendly },
+    { key: 'is_pet_friendly', label: 'Pet friendly', value: shop.is_pet_friendly },
+    { key: 'has_meals', label: 'Meals', value: shop.has_meals },
+    { key: 'has_pastries', label: 'Pastries', value: shop.has_pastries },
+    { key: 'has_car_parking', label: 'Car parking', value: shop.has_car_parking },
+    { key: 'has_bike_parking', label: 'Bike parking', value: shop.has_bike_parking },
+    { key: 'accepts_cards', label: 'Cards accepted', value: shop.accepts_cards },
+    { key: 'has_toilet_bidet', label: 'Toilet bidet', value: shop.has_toilet_bidet },
   ].filter(a => a.value)
 
   return (
@@ -265,8 +265,9 @@ export default function ShopPage() {
             <div className={styles.sectionTitle}>Amenities</div>
             <div className={styles.amenityGrid}>
               {allAmenities.map(a => (
-                <div key={a.label} className={styles.iconChip}>
-                  {a.label}
+                <div key={a.key} className={styles.amenityItem}>
+                  <AmenityIcon name={a.key} size={28} />
+                  <span>{a.label}</span>
                 </div>
               ))}
             </div>
