@@ -1,4 +1,10 @@
 .tabBar {
+  /* Same palette as the Minimal Home page */
+  --h-bg: #FBF8F3;
+  --h-ink: #3B2417;
+  --h-muted: #6F5F54;
+  --h-accent: #8A4B2A;
+  --h-line: #E7DDCE;
   position: fixed;
   bottom: 0;
   left: 50%;
@@ -6,25 +12,33 @@
   width: 100%;
   max-width: 430px;
   height: var(--tab-height);
-  background: var(--bg-card);
-  border-top: 1px solid var(--border);
+  background: var(--h-bg);
+  border-top: 1px solid var(--h-line);
   display: flex;
-  align-items: center;
-  justify-content: space-around;
+  align-items: stretch;
   z-index: 100;
   padding-bottom: env(safe-area-inset-bottom);
+  font-family: 'DM Sans', sans-serif;
 }
 .tab {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
-  flex: 1;
-  padding: 8px 0;
-  color: #88b8ce;
+  justify-content: center;
+  gap: 4px;
+  color: var(--h-muted);
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: none;
   transition: color 0.15s;
 }
-.tab:hover { color: var(--terracotta); }
-.active { color: var(--terracotta) !important; }
-.icon { font-size: 22px; line-height: 1; }
-.label { font-size: 10px; font-weight: 600; letter-spacing: 0.3px; }
+.tab:hover { color: var(--h-ink); }
+.active { color: var(--h-ink); font-weight: 700; }
+.dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: transparent;
+}
+.active .dot { background: var(--h-accent); }

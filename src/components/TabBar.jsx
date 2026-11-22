@@ -1,32 +1,32 @@
 import { Link, useLocation } from 'react-router-dom'
 import styles from './TabBar.module.css'
-import { getToken } from '../utils/auth'
 
+// Account / Log In lives in the Home page header now (next to the country
+// picker), matching the mobile app, so it's no longer a tab.
 const TABS = [
-  { path: '/', label: 'Home', icon: '🗺️' },
-  { path: '/favorites', label: 'Favorites', icon: '🤍' },
-  { path: '/suggest', label: 'Suggest', icon: '💡' },
+  { path: '/', label: 'Home' },
+  { path: '/favorites', label: 'Favorites' },
+  { path: '/suggest', label: 'Suggest' },
 ]
 
 export default function TabBar() {
   const { pathname } = useLocation()
-  const isLoggedIn = !!getToken()
-  const allTabs = [...TABS, isLoggedIn
-    ? { path: '/account', label: 'Account', icon: '👤' }
-    : { path: '/auth', label: 'Log In', icon: '👤' }
-  ]
   return (
     <nav className={styles.tabBar}>
-      {allTabs.map(tab => (
-        <Link
-          key={tab.path}
-          to={tab.path}
-          className={styles.tab + ' ' + (pathname === tab.path ? styles.active : '')}
-        >
-          <span className={styles.icon}>{tab.icon}</span>
-          <span className={styles.label}>{tab.label}</span>
-        </Link>
-      ))}
+      {TABS.map(tab => {
+        const active = pathname === tab.path
+        return (
+          <Link
+            key={tab.path}
+            to={tab.path}
+            className={styles.tab + ' ' + (active ? styles.active : '')}
+            aria-current={active ? 'page' : undefined}
+          >
+            <span className={styles.dot} aria-hidden="true" />
+            <span>{tab.label}</span>
+          </Link>
+        )
+      })}
     </nav>
   )
 }

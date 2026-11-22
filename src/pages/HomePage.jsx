@@ -7,16 +7,33 @@ import { COUNTRIES, DEFAULT_COUNTRY, detectCountry, getCountryInfo } from '../ut
 import styles from './HomePage.module.css'
 
 const FILTERS = [
-  { key: 'has_wifi', label: '📶 WiFi' },
-  { key: 'is_work_friendly', label: '💻 Work Friendly' },
-  { key: 'is_pet_friendly', label: '🐾 Pet Friendly' },
-  { key: 'has_meals', label: '🍽️ Meals' },
-  { key: 'has_pastries', label: '🥐 Pastries' },
-  { key: 'has_car_parking', label: '🚗 Car Parking' },
-  { key: 'has_bike_parking', label: '🚲 Bike Parking' },
-  { key: 'accepts_cards', label: '💳 Cards Accepted' },
-  { key: 'has_toilet_bidet', label: '🚿 Toilet Bidet' },
+  { key: 'has_wifi', label: 'WiFi' },
+  { key: 'is_work_friendly', label: 'Work Friendly' },
+  { key: 'is_pet_friendly', label: 'Pet Friendly' },
+  { key: 'has_meals', label: 'Meals' },
+  { key: 'has_pastries', label: 'Pastries' },
+  { key: 'has_car_parking', label: 'Car Parking' },
+  { key: 'has_bike_parking', label: 'Bike Parking' },
+  { key: 'accepts_cards', label: 'Cards Accepted' },
+  { key: 'has_toilet_bidet', label: 'Toilet Bidet' },
 ]
+
+// Short labels for the one-line amenity summary under each shop name.
+const AMENITY_LABELS = [
+  ['has_wifi', 'WiFi'],
+  ['is_work_friendly', 'Work'],
+  ['is_pet_friendly', 'Pets'],
+  ['has_meals', 'Meals'],
+  ['has_pastries', 'Pastries'],
+  ['has_car_parking', 'Parking'],
+  ['has_bike_parking', 'Bike'],
+  ['accepts_cards', 'Cards'],
+  ['has_toilet_bidet', 'Bidet'],
+]
+
+// Space the bubble stack needs above the country button: each bubble is
+// 52px with 10px gaps, plus a 12px offset from the button.
+const BUBBLE_STACK_PX = (COUNTRIES.length - 1) * 62 + 12
 
 // Snap point layout mirrors the mobile app's bottom sheet:
 // TOP = fully open, HALF = default resting position, PEEK = mostly collapsed.
@@ -67,6 +84,10 @@ export default function HomePage() {
   const [locationError, setLocationError] = useState('')
   const [country, setCountry] = useState(DEFAULT_COUNTRY)
   const [countryPickerOpen, setCountryPickerOpen] = useState(false)
+  // Which way the bubbles open: 'up' normally, 'left' when the sheet is pulled
+  // so high that there's no room above the button.
+  const [bubbleDir, setBubbleDir] = useState('up')
+  const countryWrapRef = useRef(null)
   // The country detected from the user's real position on load. Used to
   // decide whether the map should follow their live location (home country)
   // or stay put on a country's default center (browsing elsewhere via the
@@ -192,6 +213,37 @@ export default function HomePage() {
     // initMap (triggered by the shops update above) recenters the map on
     // this country's default view once the new data comes back.
   }
+
+  function toggleCountryPicker() {
+    if (!countryPickerOpen && countryWrapRef.current && containerRef.current) {
+      const roomAbove =
+        countryWrapRef.current.getBoundingClientRect().top -
+        containerRef.current.getBoundingClientRect().top
+      setBubbleDir(roomAbove >= BUBBLE_STACK_PX ? 'up' : 'left')
+    }
+    setCountryPickerOpen(o => !o)
+  }
+
+  // Close the bubbles on an outside press or Escape. (A full-screen backdrop
+  // can't be used here: the sheet is transformed, which would confine a
+  // position:fixed backdrop to the sheet.)
+  useEffect(() => {
+    if (!countryPickerOpen) return
+    function onPointerDown(e) {
+      if (countryWrapRef.current && !countryWrapRef.current.contains(e.target)) {
+        setCountryPickerOpen(false)
+      }
+    }
+    function onKeyDown(e) {
+      if (e.key === 'Escape') setCountryPickerOpen(false)
+    }
+    document.addEventListener('pointerdown', onPointerDown)
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown)
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [countryPickerOpen])
 
   useEffect(() => {
     // Wait for the current country's fetch to resolve rather than gating on
@@ -342,49 +394,19 @@ export default function HomePage() {
     return d < 1 ? Math.round(d * 1000) + 'm away' : d.toFixed(1) + 'km away'
   }
 
+  // The header button replaces the old Account tab: logged-in users go to
+  // their account, logged-out users go to log in.
+  const loggedIn = !!getToken()
+
   return (
     <div className={styles.container} ref={containerRef}>
       <div ref={mapRef} className={styles.map} />
 
       <div className={styles.mapOverlay}>
         {locationError && <div className={styles.locationError}>{locationError}</div>}
-        <div className={styles.countryRow}>
-          <button className={styles.locateBtn} onClick={handleLocateMe} disabled={locating}>
-            {locating ? 'Locating...' : '📍 Find my location'}
-          </button>
-
-          {/* Country switcher — mirrors the mobile app's flag+code button */}
-          <div className={styles.countryWrap}>
-            <button
-              className={styles.locateBtn}
-              onClick={() => setCountryPickerOpen(o => !o)}
-            >
-              {getCountryInfo(country).flag} {country} ▾
-            </button>
-            {countryPickerOpen && (
-              <>
-                {/* Invisible backdrop to close the menu on outside click,
-                    matching the mobile picker's tap-to-dismiss overlay. */}
-                <div
-                  className={styles.countryBackdrop}
-                  onClick={() => setCountryPickerOpen(false)}
-                />
-                <div className={styles.countryMenu}>
-                  {COUNTRIES.map(c => (
-                    <button
-                      key={c.code}
-                      onClick={() => handleSelectCountry(c.code)}
-                      className={`${styles.countryOption} ${c.code === country ? styles.countryOptionActive : ''}`}
-                    >
-                      <span>{c.flag} {c.label}</span>
-                      {c.code === country && <span>✓</span>}
-                    </button>
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
-        </div>
+        <button className={styles.locateBtn} onClick={handleLocateMe} disabled={locating}>
+          {locating ? 'Locating...' : 'Find my location'}
+        </button>
       </div>
 
       <div
@@ -406,9 +428,59 @@ export default function HomePage() {
 
           {/* Brewpack header */}
           <div className={styles.brandRow}>
-            <div>
+            <div className={styles.brandText}>
               <div className={styles.brandName}>Brewpack</div>
               <div className={styles.brandTagline}>Your GPS to good coffee</div>
+            </div>
+
+            {/* Header actions. Stopping pointerdown keeps a tap on either button
+                from starting a sheet drag. */}
+            <div className={styles.headerActions} onPointerDown={e => e.stopPropagation()}>
+            {/* Country switcher: the other countries pop up as bubbles above
+                the button. */}
+            <div className={styles.countryWrap} ref={countryWrapRef}>
+              <div
+                className={[
+                  styles.bubbles,
+                  bubbleDir === 'up' ? styles.bubblesUp : styles.bubblesLeft,
+                  countryPickerOpen ? styles.bubblesOpen : '',
+                ].join(' ')}
+              >
+                {COUNTRIES.filter(c => c.code !== country).map((c, i) => (
+                  <button
+                    key={c.code}
+                    type="button"
+                    className={styles.bubble}
+                    style={{ '--i': i }}
+                    onClick={() => handleSelectCountry(c.code)}
+                    aria-label={c.label}
+                    title={c.label}
+                  >
+                    {c.code}
+                  </button>
+                ))}
+              </div>
+              <button
+                type="button"
+                className={`${styles.countryBtn} ${countryPickerOpen ? styles.countryBtnOpen : ''}`}
+                onClick={toggleCountryPicker}
+                aria-expanded={countryPickerOpen}
+                aria-label={`Country: ${getCountryInfo(country).label}. Change country`}
+              >
+                {country}
+              </button>
+            </div>
+
+            <Link
+              to={loggedIn ? '/account' : '/auth'}
+              className={styles.accountBtn}
+              aria-label={loggedIn ? 'Account' : 'Log in'}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7" />
+              </svg>
+            </Link>
             </div>
           </div>
         </div>
@@ -441,44 +513,32 @@ export default function HomePage() {
           ) : filtered.length === 0 ? (
             <div className={styles.empty}>No shops match your filters.</div>
           ) : (
-            filtered.map(shop => (
-              <Link to={'/shop/' + shop.id} key={shop.id} className={styles.card}>
-                {shop.photo_url && shop.photo_url !== 'string' ? (
-                  <div className={styles.cardImgWrap}>
+            filtered.map(shop => {
+              const amenities = AMENITY_LABELS.filter(([key]) => shop[key]).map(([, label]) => label)
+              return (
+                <Link to={'/shop/' + shop.id} key={shop.id} className={styles.card}>
+                  {shop.photo_url && shop.photo_url !== 'string' ? (
                     <img
-                      // Request a bit taller than the single-line card height
-                      // (76) so two-line shop names, which stretch this image
-                      // taller, still get a sharp source image instead of
-                      // upscaling a 76px-tall fetch. Matches the mobile fix.
-                      src={getOptimizedImageUrl(shop.photo_url, Math.round(72 * DPR), Math.round(110 * DPR))}
-                      alt={shop.name}
+                      src={getOptimizedImageUrl(shop.photo_url, Math.round(56 * DPR), Math.round(56 * DPR))}
+                      alt=""
                       className={styles.cardImg}
                       loading="lazy"
                     />
+                  ) : (
+                    <div className={styles.cardImgPlaceholder} />
+                  )}
+                  <div className={styles.cardBody}>
+                    <div className={styles.cardName}>{shop.name}</div>
+                    <div className={styles.cardLocation}>
+                      {[shop.city, amenities.join(', ')].filter(Boolean).join(' · ')}
+                    </div>
                   </div>
-                ) : (
-                  <div className={styles.cardImgPlaceholder}>☕</div>
-                )}
-                <div className={styles.cardBody}>
-                  <div className={styles.cardName}>{shop.name}</div>
-                  <div className={styles.cardLocation}>{shop.city} · {shop.region}</div>
-                  <div className={styles.cardTags}>
-                    {shop.has_wifi && <span className={styles.tag}>📶</span>}
-                    {shop.is_work_friendly && <span className={styles.tag}>💻</span>}
-                    {shop.is_pet_friendly && <span className={styles.tag}>🐾</span>}
-                    {shop.has_meals && <span className={styles.tag}>🍽️</span>}
-                    {shop.has_pastries && <span className={styles.tag}>🥐</span>}
-                    {shop.has_car_parking && <span className={styles.tag}>🚗</span>}
-                    {shop.has_bike_parking && <span className={styles.tag}>🚲</span>}
-                    {shop.accepts_cards && <span className={styles.tag}>💳</span>}
-                    {shop.has_toilet_bidet && <span className={styles.tag}>🚿</span>}
-                  </div>
-                </div>
-                {formatDistance(shop) && (
-                  <div className={styles.distance}>{formatDistance(shop)}</div>
-                )}
-              </Link>
-            ))
+                  {formatDistance(shop) && (
+                    <div className={styles.distance}>{formatDistance(shop)}</div>
+                  )}
+                </Link>
+              )
+            })
           )}
         </div>
       </div>
