@@ -343,14 +343,6 @@ export default function HomePage() {
     }
   }, [location, country])
 
-  function getBeanIcon(visited) {
-    if (!visited) return null
-    return {
-      url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
-      labelOrigin: new google.maps.Point(0, -10),
-    }
-  }
-
   // Built on demand because google.maps only exists once the SDK has loaded.
   // The anchor is the disc's center, so the pin sits on the shop's coordinates.
   function getVisitedIcon() {
