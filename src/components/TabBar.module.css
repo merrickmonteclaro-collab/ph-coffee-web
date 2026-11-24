@@ -1,10 +1,4 @@
 .tabBar {
-  /* Same palette as the Minimal Home page */
-  --h-bg: #FBF8F3;
-  --h-ink: #3B2417;
-  --h-muted: #6F5F54;
-  --h-accent: #8A4B2A;
-  --h-line: #E7DDCE;
   position: fixed;
   bottom: 0;
   left: 50%;
@@ -12,8 +6,8 @@
   width: 100%;
   max-width: 430px;
   height: var(--tab-height);
-  background: var(--h-bg);
-  border-top: 1px solid var(--h-line);
+  background: var(--paper);
+  border-top: 1px solid var(--line);
   display: flex;
   align-items: stretch;
   z-index: 100;
@@ -27,18 +21,18 @@
   align-items: center;
   justify-content: center;
   gap: 4px;
-  color: var(--h-muted);
+  color: var(--muted);
   font-size: 12px;
   font-weight: 500;
   text-decoration: none;
   transition: color 0.15s;
 }
-.tab:hover { color: var(--h-ink); }
-.active { color: var(--h-ink); font-weight: 700; }
+.tab:hover { color: var(--ink); }
+.active { color: var(--ink); font-weight: 700; }
 .dot {
   width: 4px;
   height: 4px;
   border-radius: 50%;
   background: transparent;
 }
-.active .dot { background: var(--h-accent); }
+.active .dot { background: var(--accent); }

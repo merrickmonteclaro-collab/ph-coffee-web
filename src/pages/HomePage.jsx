@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { API_URL, GOOGLE_MAPS_KEY } from '../utils/config'
 import { getToken, authFetch } from '../utils/auth'
 import { getShops } from '../utils/shopsCache'
@@ -92,7 +92,11 @@ const VISITED_PIN_SVG =
   '<circle cx="233" cy="122" r="17"/></svg></svg>'
 const VISITED_PIN_URL = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(VISITED_PIN_SVG)
 
-export default function HomePage() {
+// `active` is false while the user is on another page. App keeps HomePage
+// mounted (just hidden) so the map, shop list, filters and sheet position
+// survive a trip to a shop page or Favorites.
+export default function HomePage({ active = true }) {
+  const navigate = useNavigate()
   const mapRef = useRef(null)
   const mapInstanceRef = useRef(null)
   const userMarkerRef = useRef(null)
@@ -120,6 +124,10 @@ export default function HomePage() {
   // switcher) — mirrors the distinction mobile makes between the initial
   // GPS-based center and a manual country switch.
   const homeCountryRef = useRef(DEFAULT_COUNTRY)
+  // Country the current map was built for, so a rebuild caused by something
+  // else (e.g. the visited list changing) can keep the user's pan and zoom.
+  const mapCountryRef = useRef(null)
+  const firstActiveRef = useRef(true)
 
   // ── Draggable bottom sheet ──
   const [snapPoints, setSnapPoints] = useState(null) // { top, half, peek }
@@ -130,6 +138,7 @@ export default function HomePage() {
   // Measure container height on mount/resize to compute snap points,
   // mirroring mobile's SCREEN_HEIGHT-based SNAP_TOP/HALF/PEEK constants.
   useEffect(() => {
+    if (!active) return // a hidden container measures 0, so wait until shown
     function measure() {
       const h = containerRef.current?.clientHeight || window.innerHeight
       const points = {
@@ -143,7 +152,7 @@ export default function HomePage() {
     measure()
     window.addEventListener('resize', measure)
     return () => window.removeEventListener('resize', measure)
-  }, [])
+  }, [active])
 
   const snapTo = useCallback((point) => {
     setDragging(false)
@@ -197,12 +206,7 @@ export default function HomePage() {
   }, [dragging, snapPoints, translateY, snapTo])
 
   useEffect(() => {
-    if (getToken()) {
-      authFetch(`${API_URL}/visited/`)
-        .then(r => r.json())
-        .then(data => { if (Array.isArray(data)) setVisitedShopIds(data.map(v => v.shop_id)) })
-        .catch(() => {})
-    }
+    refreshVisited()
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -223,6 +227,49 @@ export default function HomePage() {
       loadShops(DEFAULT_COUNTRY)
     }
   }, [])
+
+  // Only touches state when the list actually changed: a new array would
+  // re-run the map effect and rebuild every pin for nothing.
+  function refreshVisited() {
+    if (!getToken()) {
+      setVisitedShopIds(prev => (prev.length ? [] : prev))
+      return
+    }
+    authFetch(`${API_URL}/visited/`)
+      .then(r => r.json())
+      .then(data => {
+        if (!Array.isArray(data)) return
+        const ids = data.map(v => v.shop_id)
+        setVisitedShopIds(prev =>
+          prev.length === ids.length && ids.every(id => prev.includes(id)) ? prev : ids
+        )
+      })
+      .catch(() => {})
+  }
+
+  // Each time the user comes back to Home: fix the map's size (it can't
+  // measure itself while hidden) and pick up visited/login changes.
+  useEffect(() => {
+    if (!active) return
+    if (mapInstanceRef.current && window.google?.maps) {
+      google.maps.event.trigger(mapInstanceRef.current, 'resize')
+    }
+    if (firstActiveRef.current) { firstActiveRef.current = false; return } // mount effect already fetched
+    refreshVisited()
+  }, [active])
+
+  // Info window "View Shop" is raw HTML, so a normal <a> would reload the whole
+  // app. Route it through the router instead.
+  useEffect(() => {
+    function onClick(e) {
+      const a = e.target.closest && e.target.closest('a[data-shop-link]')
+      if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
+      e.preventDefault()
+      navigate(a.getAttribute('href'))
+    }
+    document.addEventListener('click', onClick)
+    return () => document.removeEventListener('click', onClick)
+  }, [navigate])
 
   function loadShops(countryCode) {
     setLoading(true)
@@ -355,9 +402,13 @@ export default function HomePage() {
 
   function initMap() {
     const atHome = location && country === homeCountryRef.current
-    const center = atHome ? location : getCountryInfo(country).center
+    const prevMap = mapInstanceRef.current
+    const keepView = !!prevMap && mapCountryRef.current === country
+    const center = keepView ? prevMap.getCenter() : (atHome ? location : getCountryInfo(country).center)
+    const zoom = keepView ? prevMap.getZoom() : (atHome ? 13 : 7)
+    mapCountryRef.current = country
     const map = new google.maps.Map(mapRef.current, {
-      center, zoom: atHome ? 13 : 7,
+      center, zoom,
       mapTypeControl: false, streetViewControl: false,
       fullscreenControl: false, zoomControl: false,
     })
@@ -381,7 +432,7 @@ export default function HomePage() {
           '<div style="font-weight:700;font-size:14px;color:var(--ink,#3B2417);margin-bottom:3px">' + shop.name + '</div>' +
           '<div style="font-size:11px;color:var(--muted,#6F5F54);margin-bottom:8px">' + shop.city + ' · ' + shop.region + '</div>' +
           '<div style="display:flex;gap:6px">' +
-            '<a href="/shop/' + shop.id + '" style="flex:1;background:var(--ink,#3B2417);color:var(--paper,#FBF8F3);border-radius:6px;padding:5px 8px;font-size:11px;font-weight:600;text-align:center;text-decoration:none">View Shop</a>' +
+            '<a href="/shop/' + shop.id + '" data-shop-link style="flex:1;background:var(--ink,#3B2417);color:var(--paper,#FBF8F3);border-radius:6px;padding:5px 8px;font-size:11px;font-weight:600;text-align:center;text-decoration:none">View Shop</a>' +
             '<a href="https://www.google.com/maps/dir/?api=1&destination=' + shop.latitude + ',' + shop.longitude + '" target="_blank" style="flex:1;background:var(--accent,#8A4B2A);color:var(--paper,#FBF8F3);border-radius:6px;padding:5px 8px;font-size:11px;font-weight:600;text-align:center;text-decoration:none">Navigate</a>' +
           '</div>' +
         '</div>'
