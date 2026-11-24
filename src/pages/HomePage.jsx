@@ -72,7 +72,7 @@ const DPR = Math.min(window.devicePixelRatio || 1, 3)
 // off-white disc with an accent ring, so it stays readable over map tiles.
 // Uses the stroke width from brewpack-logo-outline-bold.svg (20). Inlined as
 // a data URI so there's no extra network request.
-const VISITED_PIN_SIZE = 48
+const VISITED_PIN_SIZE = 40
 const VISITED_PIN_SVG =
   '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">' +
   '<circle cx="24" cy="24" r="22" fill="#FBF8F3" stroke="#8A4B2A" stroke-width="2"/>' +
