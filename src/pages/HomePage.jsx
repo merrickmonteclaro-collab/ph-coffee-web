@@ -5,6 +5,7 @@ import { getToken, authFetch } from '../utils/auth'
 import { getShops } from '../utils/shopsCache'
 import { COUNTRIES, DEFAULT_COUNTRY, detectCountry, getCountryInfo } from '../utils/countries'
 import AmenityIcon from '../components/AmenityIcon'
+import BrewpackLogo from '../components/BrewpackLogo'
 import styles from './HomePage.module.css'
 
 const FILTERS = [
@@ -66,6 +67,30 @@ function getOptimizedImageUrl(url, width, height) {
 // Cap at 3x — going higher rarely improves visible quality and just
 // inflates payload size unnecessarily.
 const DPR = Math.min(window.devicePixelRatio || 1, 3)
+
+// Map pin for shops the user has visited: the bold outline logo on an
+// off-white disc with an accent ring, so it stays readable over map tiles.
+// Uses the stroke width from brewpack-logo-outline-bold.svg (20). Inlined as
+// a data URI so there's no extra network request.
+const VISITED_PIN_SIZE = 48
+const VISITED_PIN_SVG =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">' +
+  '<circle cx="24" cy="24" r="22" fill="#FBF8F3" stroke="#8A4B2A" stroke-width="2"/>' +
+  '<svg x="7" y="7" width="34" height="34" viewBox="40 40 380 420" fill="none" stroke="#3B2417" stroke-width="20" stroke-linecap="round" stroke-linejoin="round">' +
+  '<defs><mask id="m" maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="512">' +
+  '<rect width="512" height="512" fill="#fff" stroke="none"/>' +
+  '<path d="M233 232C215 205 176 172 176 121A57 57 0 0 1 290 121C290 172 251 205 233 232Z" fill="#000" stroke="#000" stroke-width="42"/></mask></defs>' +
+  '<g mask="url(#m)">' +
+  '<path d="M142 214H130Q120 214 120 204V168Q120 154 134 154H158Q174 154 174 168V178"/>' +
+  '<path d="M324 214H336Q346 214 346 204V168Q346 154 332 154H308Q292 154 292 168V178"/>' +
+  '<path d="M140 226V404Q140 442 178 442H288Q326 442 326 404V226"/>' +
+  '<ellipse cx="233" cy="226" rx="93" ry="18"/>' +
+  '<path d="M326 262H350A56 56 0 0 1 350 374H326"/>' +
+  '<path d="M140 326H126Q108 326 108 344V388Q108 406 126 406H140"/>' +
+  '<rect x="174" y="316" width="118" height="96" rx="22"/></g>' +
+  '<path d="M233 232C215 205 176 172 176 121A57 57 0 0 1 290 121C290 172 251 205 233 232Z"/>' +
+  '<circle cx="233" cy="122" r="17"/></svg></svg>'
+const VISITED_PIN_URL = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(VISITED_PIN_SVG)
 
 export default function HomePage() {
   const mapRef = useRef(null)
@@ -326,6 +351,16 @@ export default function HomePage() {
     }
   }
 
+  // Built on demand because google.maps only exists once the SDK has loaded.
+  // The anchor is the disc's center, so the pin sits on the shop's coordinates.
+  function getVisitedIcon() {
+    return {
+      url: VISITED_PIN_URL,
+      scaledSize: new google.maps.Size(VISITED_PIN_SIZE, VISITED_PIN_SIZE),
+      anchor: new google.maps.Point(VISITED_PIN_SIZE / 2, VISITED_PIN_SIZE / 2),
+    }
+  }
+
   function initMap() {
     const atHome = location && country === homeCountryRef.current
     const center = atHome ? location : getCountryInfo(country).center
@@ -346,7 +381,9 @@ export default function HomePage() {
         position: { lat: shop.latitude, lng: shop.longitude },
         map,
         title: shop.name,
-        icon: visitedShopIds.includes(shop.id) ? { url: 'https://maps.google.com/mapfiles/ms/icons/flag.png' } : undefined,
+        icon: visitedShopIds.includes(shop.id) ? getVisitedIcon() : undefined,
+        // Keep visited pins above the default ones where they overlap.
+        zIndex: visitedShopIds.includes(shop.id) ? 10 : undefined,
       })
       const content = '<div style="font-family:DM Sans,sans-serif;padding:4px;min-width:160px">' +
           '<div style="font-weight:700;font-size:14px;color:#542916;margin-bottom:3px">' + shop.name + '</div>' +
@@ -429,9 +466,12 @@ export default function HomePage() {
 
           {/* Brewpack header */}
           <div className={styles.brandRow}>
-            <div className={styles.brandText}>
-              <div className={styles.brandName}>Brewpack</div>
-              <div className={styles.brandTagline}>Your GPS to good coffee</div>
+            <div className={styles.brand}>
+              <BrewpackLogo size={44} className={styles.brandLogo} />
+              <div className={styles.brandText}>
+                <div className={styles.brandName}>Brewpack</div>
+                <div className={styles.brandTagline}>Your GPS to good coffee</div>
+              </div>
             </div>
 
             {/* Header actions. Stopping pointerdown keeps a tap on either button

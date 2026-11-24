@@ -109,6 +109,16 @@
   color: var(--h-ink);
   line-height: 1;
 }
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.brandLogo {
+  flex: none;
+  color: var(--h-ink);
+}
 .brandText { min-width: 0; }
 .brandTagline {
   font-size: 12px;
