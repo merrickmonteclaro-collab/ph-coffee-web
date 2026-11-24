@@ -300,7 +300,7 @@
 .list {
   flex: 1;
   overflow-y: auto;
-  padding-bottom: 64px;
+  padding-bottom: 74px;
 }
 .empty {
   text-align: center;
