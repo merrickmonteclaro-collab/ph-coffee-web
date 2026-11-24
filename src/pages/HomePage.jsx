@@ -72,7 +72,7 @@ const DPR = Math.min(window.devicePixelRatio || 1, 3)
 // off-white disc with an accent ring, so it stays readable over map tiles.
 // Uses the stroke width from brewpack-logo-outline-bold.svg (20). Inlined as
 // a data URI so there's no extra network request.
-const VISITED_PIN_SIZE = 40
+const VISITED_PIN_SIZE = 48
 const VISITED_PIN_SVG =
   '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">' +
   '<circle cx="24" cy="24" r="22" fill="#FBF8F3" stroke="#8A4B2A" stroke-width="2"/>' +
@@ -386,11 +386,11 @@ export default function HomePage() {
         zIndex: visitedShopIds.includes(shop.id) ? 10 : undefined,
       })
       const content = '<div style="font-family:DM Sans,sans-serif;padding:4px;min-width:160px">' +
-          '<div style="font-weight:700;font-size:14px;color:#542916;margin-bottom:3px">' + shop.name + '</div>' +
-          '<div style="font-size:11px;color:#88b8ce;margin-bottom:8px">' + shop.city + ' · ' + shop.region + '</div>' +
+          '<div style="font-weight:700;font-size:14px;color:var(--ink,#3B2417);margin-bottom:3px">' + shop.name + '</div>' +
+          '<div style="font-size:11px;color:var(--muted,#6F5F54);margin-bottom:8px">' + shop.city + ' · ' + shop.region + '</div>' +
           '<div style="display:flex;gap:6px">' +
-            '<a href="/shop/' + shop.id + '" style="flex:1;background:#542916;color:#FFEEBC;border-radius:6px;padding:5px 8px;font-size:11px;font-weight:600;text-align:center;text-decoration:none">View Shop</a>' +
-            '<a href="https://www.google.com/maps/dir/?api=1&destination=' + shop.latitude + ',' + shop.longitude + '" target="_blank" style="flex:1;background:#88b8ce;color:#FFEEBC;border-radius:6px;padding:5px 8px;font-size:11px;font-weight:600;text-align:center;text-decoration:none">Navigate</a>' +
+            '<a href="/shop/' + shop.id + '" style="flex:1;background:var(--ink,#3B2417);color:var(--paper,#FBF8F3);border-radius:6px;padding:5px 8px;font-size:11px;font-weight:600;text-align:center;text-decoration:none">View Shop</a>' +
+            '<a href="https://www.google.com/maps/dir/?api=1&destination=' + shop.latitude + ',' + shop.longitude + '" target="_blank" style="flex:1;background:var(--accent,#8A4B2A);color:var(--paper,#FBF8F3);border-radius:6px;padding:5px 8px;font-size:11px;font-weight:600;text-align:center;text-decoration:none">Navigate</a>' +
           '</div>' +
         '</div>'
       marker.addListener('click', () => {

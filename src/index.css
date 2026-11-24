@@ -1,6 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
 
 :root {
+  /* ── Minimal palette (current direction) ─────────────────
+     New and migrated pages should use these. */
+  --paper: #FBF8F3;   /* page / sheet background */
+  --ink: #3B2417;     /* primary text */
+  --muted: #6F5F54;   /* secondary text, placeholders */
+  --accent: #8A4B2A;  /* active states, links, distance */
+  --line: #E7DDCE;    /* hairlines and borders */
+  --thumb: #E3D5C0;   /* image placeholder fill */
+  --handle: #DDD2C2;  /* bottom-sheet grab handle */
+  --shadow-sm: 0 2px 10px rgba(59, 36, 23, 0.12);
+  --shadow-md: 0 4px 14px rgba(59, 36, 23, 0.14);
+  --shadow-sheet: 0 -2px 20px rgba(59, 36, 23, 0.10);
+
+  /* ── Legacy palette ──────────────────────────────────────
+     Still used by pages that haven't been restyled yet. Many of these
+     share a value (the olive-* and brown tokens, for example), which is
+     why they're worth pruning once every page has migrated. */
   --bg: #FFEEBC;
   --bg-card: #FFF8E7;
   --bg-sand: #F5E8C0;
