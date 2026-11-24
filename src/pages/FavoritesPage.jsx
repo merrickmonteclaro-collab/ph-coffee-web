@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { API_URL } from '../utils/config'
 import { getToken, authFetch } from '../utils/auth'
-import { getShops } from '../utils/shopsCache'
+import { getShops, getCachedShops, isCountryCached } from '../utils/shopsCache'
+import { COUNTRIES } from '../utils/countries'
 import styles from './FavoritesPage.module.css'
 
 // Inserts Cloudinary transformation params into an upload URL so the CDN
@@ -14,6 +15,11 @@ function getOptimizedImageUrl(url, width, height) {
 }
 const DPR = Math.min(window.devicePixelRatio || 1, 3)
 
+// Last favorite IDs seen this session (tagged with the token, so one account's
+// list is never shown to another). Lets a revisit paint instantly while the
+// fresh list loads in the background.
+let lastFavorites = { token: null, ids: null }
+
 export default function FavoritesPage() {
   const [favorites, setFavorites] = useState([])
   const [loading, setLoading] = useState(true)
@@ -24,16 +30,56 @@ export default function FavoritesPage() {
       setLoading(false)
       return
     }
-    Promise.all([
-      getShops(),
-      authFetch(`${API_URL}/favorites/`).then(r => r.json()),
-    ])
-      .then(([shops, favRecords]) => {
-        const favoriteIds = Array.isArray(favRecords) ? favRecords.map(f => f.shop_id) : []
-        setFavorites(Array.isArray(shops) ? shops.filter(s => favoriteIds.includes(s.id)) : [])
-        setLoading(false)
+    let cancelled = false
+    const token = getToken()
+
+    // Shops already in memory (e.g. the country list Home loaded), filtered
+    // to the given favorite IDs.
+    const knownFavorites = ids => getCachedShops().filter(s => ids.includes(s.id))
+
+    // Revisit: show the last known list immediately, refresh underneath.
+    if (lastFavorites.token === token && lastFavorites.ids) {
+      setFavorites(knownFavorites(lastFavorites.ids))
+      setLoading(false)
+    }
+
+    authFetch(`${API_URL}/favorites/`)
+      .then(r => r.json())
+      .then(favRecords => {
+        const ids = Array.isArray(favRecords) ? favRecords.map(f => f.shop_id) : []
+        lastFavorites = { token, ids }
+        const known = knownFavorites(ids)
+        if (!cancelled) setFavorites(known)
+
+        // Everything is already in memory (or there are no favorites): done,
+        // and the big all-countries shop download is skipped entirely.
+        if (known.length === ids.length) {
+          if (!cancelled) setLoading(false)
+          return
+        }
+
+        // Some favorites live in a country that isn't cached yet. Fetch only
+        // the missing countries, in parallel, and show favorites as each one
+        // arrives. The results land in the same per-country cache Home uses,
+        // so the country switcher there benefits too.
+        const refresh = () => {
+          const found = knownFavorites(ids)
+          if (!cancelled) setFavorites(found)
+          return found.length === ids.length
+        }
+        const missing = COUNTRIES.filter(c => !isCountryCached(c.code))
+        return Promise.allSettled(
+          missing.map(c => getShops({ country: c.code }).then(() => {
+            if (refresh() && !cancelled) setLoading(false)
+          }))
+        ).then(() => {
+          refresh()
+          if (!cancelled) setLoading(false)
+        })
       })
-      .catch(() => setLoading(false))
+      .catch(() => { if (!cancelled) setLoading(false) })
+
+    return () => { cancelled = true }
   }, [isLoggedIn])
 
   if (!isLoggedIn) {

@@ -45,6 +45,26 @@ export function getShops({ country, forceRefresh = false } = {}) {
   return pendingFetches[key]
 }
 
+/**
+ * Every shop currently held in the cache, across all countries, ignoring the
+ * TTL. Never touches the network. Pages can use it to paint something right
+ * away (e.g. Favorites using the country list Home already loaded) and then
+ * revalidate with getShops().
+ */
+export function getCachedShops() {
+  const byId = new Map()
+  for (const key in cache) {
+    for (const shop of cache[key].shops) byId.set(shop.id, shop)
+  }
+  return [...byId.values()]
+}
+
+// True if this country's shops are in memory (fresh or not). Lets callers
+// fetch only the countries they're missing.
+export function isCountryCached(country) {
+  return !!cache[country]
+}
+
 // Call after an action that changes shop data (e.g. admin edit propagating,
 // or a future in-app edit flow) to force the next getShops() call to refetch.
 // Pass a country to invalidate just that country's cache, or omit to clear all.
