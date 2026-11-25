@@ -142,6 +142,44 @@
 }
 .accountBtn:hover { border-color: var(--accent); color: var(--accent); }
 
+/* "Log in" speech bubble above the account icon for logged-out visitors.
+   Total height (24 bubble + 6 tail + 2 gap) fits the sheet's handle band. */
+.accountWrap {
+  position: relative;
+  flex-shrink: 0;
+}
+.loginBubble {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 8px);
+  height: 24px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  border-radius: 12px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+  box-shadow: var(--shadow-sm);
+  transition: background-color 0.15s;
+}
+.loginBubble::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  right: 16px; /* centers the tail over the 44px icon */
+  border: 6px solid transparent;
+  border-bottom-width: 0;
+  border-top-color: var(--ink);
+  transition: border-top-color 0.15s;
+}
+.loginBubble:hover { background: var(--accent); }
+.loginBubble:hover::after { border-top-color: var(--accent); }
+
 /* ── Country switcher: bubbles pop up above the button ─── */
 .countryWrap {
   position: relative;
@@ -294,7 +332,7 @@
 .list {
   flex: 1;
   overflow-y: auto;
-  padding-bottom: 78px;
+  padding-bottom: 32px;
 }
 .empty {
   text-align: center;
