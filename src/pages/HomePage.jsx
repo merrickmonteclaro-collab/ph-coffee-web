@@ -555,27 +555,16 @@ export default function HomePage({ active = true }) {
               </button>
             </div>
 
-            <div className={styles.accountWrap}>
-              {/* Call to action for visitors who haven't logged in. Hidden
-                  while the country bubbles are open so the two don't collide.
-                  The icon link beside it already has the "Log in" label, so
-                  this one is skipped by screen readers and the tab order. */}
-              {!loggedIn && !countryPickerOpen && (
-                <Link to="/auth" className={styles.loginBubble} aria-hidden="true" tabIndex={-1}>
-                  Log in
-                </Link>
-              )}
-              <Link
-                to={loggedIn ? '/account' : '/auth'}
-                className={styles.accountBtn}
-                aria-label={loggedIn ? 'Account' : 'Log in'}
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-                  <circle cx="12" cy="8" r="4" />
-                  <path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7" />
-                </svg>
-              </Link>
-            </div>
+            <Link
+              to={loggedIn ? '/account' : '/auth'}
+              className={styles.accountBtn}
+              aria-label={loggedIn ? 'Account' : 'Log in'}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7" />
+              </svg>
+            </Link>
             </div>
           </div>
         </div>
