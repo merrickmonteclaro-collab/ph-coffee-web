@@ -11,6 +11,7 @@
   font-family: 'DM Sans', sans-serif;
 }
 .card { width: 100%; max-width: 380px; }
+.logo { display: block; margin: 0 0 12px; color: var(--ink); }
 .title { margin: 0 0 4px; font-size: 28px; font-weight: 700; line-height: 1.1; color: var(--ink); }
 .subtitle { margin: 0 0 24px; font-size: 14px; color: var(--muted); }
 .label {

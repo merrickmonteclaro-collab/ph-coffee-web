@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { API_URL } from '../utils/config'
+import BrewpackLogo from '../components/BrewpackLogo'
 import styles from './AuthPage.module.css'
 
 export default function ResetPasswordPage() {
@@ -50,7 +51,9 @@ export default function ResetPasswordPage() {
     return (
       <div className={styles.page}>
         <div className={styles.card}>
-          <h1 className={styles.title}>Brewpack</h1>
+          {/* Decorative: the heading right below already says "Brewpack". */}
+        <BrewpackLogo size={56} title="" className={styles.logo} />
+        <h1 className={styles.title}>Brewpack</h1>
           <div className={styles.error}>This reset link is invalid or incomplete.</div>
           <Link to="/forgot-password" className={styles.toggle}>
             Request a new reset link
@@ -63,6 +66,8 @@ export default function ResetPasswordPage() {
   return (
     <div className={styles.page}>
       <div className={styles.card}>
+        {/* Decorative: the heading right below already says "Brewpack". */}
+        <BrewpackLogo size={56} title="" className={styles.logo} />
         <h1 className={styles.title}>Brewpack</h1>
         <p className={styles.subtitle}>Set a new password</p>
 

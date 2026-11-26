@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { API_URL } from '../utils/config'
 import { saveToken } from '../utils/auth'
+import BrewpackLogo from '../components/BrewpackLogo'
 import styles from './AuthPage.module.css'
 
 export default function AuthPage() {
@@ -57,6 +58,8 @@ export default function AuthPage() {
   return (
     <div className={styles.page}>
       <div className={styles.card}>
+        {/* Decorative: the heading right below already says "Brewpack". */}
+        <BrewpackLogo size={56} title="" className={styles.logo} />
         <h1 className={styles.title}>Brewpack</h1>
         <p className={styles.subtitle}>{isLogin ? 'Welcome back!' : 'Create an account'}</p>
 

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { API_URL } from '../utils/config'
+import BrewpackLogo from '../components/BrewpackLogo'
 import styles from './AuthPage.module.css'
 
 export default function ForgotPasswordPage() {
@@ -45,6 +46,8 @@ export default function ForgotPasswordPage() {
   return (
     <div className={styles.page}>
       <div className={styles.card}>
+        {/* Decorative: the heading right below already says "Brewpack". */}
+        <BrewpackLogo size={56} title="" className={styles.logo} />
         <h1 className={styles.title}>Brewpack</h1>
         <p className={styles.subtitle}>Reset your password</p>
 

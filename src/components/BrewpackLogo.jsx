@@ -1,5 +1,6 @@
 // Brewpack mark (bold outline). Draws in currentColor so it follows the
 // surrounding text color. Geometry and stroke match brewpack-logo-outline-bold.svg.
+// Pass title="" when the logo is decorative (next to a "Brewpack" heading).
 export default function BrewpackLogo({ size = 40, strokeWidth = 20, className, title = 'Brewpack' }) {
   return (
     <svg
@@ -12,8 +13,9 @@ export default function BrewpackLogo({ size = 40, strokeWidth = 20, className, t
       strokeWidth={strokeWidth}
       strokeLinecap="round"
       strokeLinejoin="round"
-      role="img"
-      aria-label={title}
+      role={title ? 'img' : undefined}
+      aria-label={title || undefined}
+      aria-hidden={title ? undefined : true}
     >
       <defs>
         <mask id="brewpack-pin-cut" maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="512">
