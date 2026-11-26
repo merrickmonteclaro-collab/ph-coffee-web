@@ -21,6 +21,8 @@ let lastFavorites = { token: null, shops: null }
 export default function FavoritesPage() {
   const [favorites, setFavorites] = useState([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
+  const [reloadKey, setReloadKey] = useState(0) // bump to retry after a failure
   const isLoggedIn = !!getToken()
 
   useEffect(() => {
@@ -40,19 +42,22 @@ export default function FavoritesPage() {
     // One request returns the user's favorite shops with full details,
     // whatever country they're in.
     authFetch(`${API_URL}/shops/favorites`)
-      .then(r => r.json())
+      // A failed request (expired login, server error) must not be treated as
+      // "no favorites", or it would show an empty list and cache it.
+      .then(r => (r.ok ? r.json() : Promise.reject(new Error('bad status'))))
       .then(shops => {
         const list = Array.isArray(shops) ? shops : []
         lastFavorites = { token, shops: list }
         if (!cancelled) {
           setFavorites(list)
+          setLoadError(false)
           setLoading(false)
         }
       })
-      .catch(() => { if (!cancelled) setLoading(false) })
+      .catch(() => { if (!cancelled) { setLoadError(true); setLoading(false) } })
 
     return () => { cancelled = true }
-  }, [isLoggedIn])
+  }, [isLoggedIn, reloadKey])
 
   if (!isLoggedIn) {
     return (
@@ -73,6 +78,17 @@ export default function FavoritesPage() {
       <div className={styles.list}>
         {loading ? (
           <div className={styles.empty}>Loading favorites...</div>
+        ) : loadError && favorites.length === 0 ? (
+          <div className={styles.empty}>
+            Couldn’t load your favorites.
+            <button
+              type="button"
+              className={styles.retryBtn}
+              onClick={() => { setLoading(true); setLoadError(false); setReloadKey(k => k + 1) }}
+            >
+              Try again
+            </button>
+          </div>
         ) : favorites.length === 0 ? (
           <div className={styles.empty}>No favorites yet. Open a shop and tap “Add to Favorites” to save it here.</div>
         ) : (

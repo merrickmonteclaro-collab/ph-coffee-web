@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
 import { API_URL } from '../utils/config'
 import styles from './SuggestPage.module.css'
@@ -44,13 +44,38 @@ export default function SuggestPage() {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState('')
+  // Set when a suggestion was saved but some of its photos failed to upload.
+  const [photoWarning, setPhotoWarning] = useState(false)
 
-  useEffect(() => {
+  // The shop list is only needed by the two "which shop?" search boxes, so it
+  // is fetched the first time someone types in one, not when the page opens.
+  const [shopsLoading, setShopsLoading] = useState(false)
+  const [shopsFailed, setShopsFailed] = useState(false)
+  const shopsRequested = useRef(false)
+
+  // Safe to call on every keystroke: it only fetches once, and tries again on
+  // a later keystroke if the first attempt failed.
+  function ensureShopsLoaded() {
+    if (shopsRequested.current) return
+    shopsRequested.current = true
+    setShopsLoading(true)
+    setShopsFailed(false)
     fetch(`${API_URL}/shops/`)
       .then(r => r.json())
-      .then(data => { if (Array.isArray(data)) setShops(data) })
-      .catch(() => {})
-  }, [])
+      .then(data => {
+        if (Array.isArray(data)) {
+          setShops(data)
+        } else {
+          shopsRequested.current = false
+          setShopsFailed(true)
+        }
+      })
+      .catch(() => {
+        shopsRequested.current = false
+        setShopsFailed(true)
+      })
+      .finally(() => setShopsLoading(false))
+  }
 
   function handleChange(e) { setForm(prev => ({ ...prev, [e.target.name]: e.target.value })) }
 
@@ -65,14 +90,23 @@ export default function SuggestPage() {
     setPhotos(current.filter((_, i) => i !== index))
   }
 
+  // Returns the photos that failed to upload (empty when all went through),
+  // so callers can tell the user instead of reporting success regardless.
   async function uploadPhotos(photos, target) {
+    const failed = []
     for (const p of photos) {
-      const formData = new FormData()
-      formData.append('file', p.file)
-      if (target.shop_id) formData.append('shop_id', String(target.shop_id))
-      if (target.suggestion_id) formData.append('suggestion_id', String(target.suggestion_id))
-      await fetch(`${API_URL}/suggested-photos/`, { method: 'POST', body: formData })
+      try {
+        const formData = new FormData()
+        formData.append('file', p.file)
+        if (target.shop_id) formData.append('shop_id', String(target.shop_id))
+        if (target.suggestion_id) formData.append('suggestion_id', String(target.suggestion_id))
+        const res = await fetch(`${API_URL}/suggested-photos/`, { method: 'POST', body: formData })
+        if (!res.ok) failed.push(p)
+      } catch {
+        failed.push(p)
+      }
     }
+    return failed
   }
 
   async function handleSubmit(e) {
@@ -96,9 +130,13 @@ export default function SuggestPage() {
       if (!res.ok) throw new Error()
       const created = await res.json() // includes .id
 
-      if (newShopPhotos.length > 0) {
-        await uploadPhotos(newShopPhotos, { suggestion_id: created.id })
-      }
+      // The suggestion itself is saved at this point, so a photo failure is
+      // reported on the success screen rather than as an error (which would
+      // invite a duplicate submission).
+      const failedPhotos = newShopPhotos.length > 0
+        ? await uploadPhotos(newShopPhotos, { suggestion_id: created.id })
+        : []
+      setPhotoWarning(failedPhotos.length > 0)
 
       setSuccess(true)
       setForm({ shop_name: '', address: '', city: '', region: '', notes: '', facebook_url: '', instagram_url: '' })
@@ -142,11 +180,21 @@ export default function SuggestPage() {
     if (existingShopPhotos.length === 0) { setError('Please add at least one photo.'); return }
     setError(''); setPhotosLoading(true)
     try {
-      await uploadPhotos(existingShopPhotos, { shop_id: selectedPhotoShop.id })
-      setSuccess(true)
-      setSelectedPhotoShop(null)
-      setPhotoShopSearch('')
-      setExistingShopPhotos([])
+      const failedPhotos = await uploadPhotos(existingShopPhotos, { shop_id: selectedPhotoShop.id })
+      if (failedPhotos.length > 0) {
+        // Keep only the ones that failed, so a retry doesn't re-send the rest.
+        setExistingShopPhotos(failedPhotos)
+        setError(
+          failedPhotos.length === existingShopPhotos.length
+            ? "Your photos couldn't be uploaded. Please try again."
+            : `${failedPhotos.length} of ${existingShopPhotos.length} photos couldn't be uploaded. Please try again.`
+        )
+      } else {
+        setSuccess(true)
+        setSelectedPhotoShop(null)
+        setPhotoShopSearch('')
+        setExistingShopPhotos([])
+      }
     } catch { setError('Something went wrong uploading your photos. Please try again.') }
     setPhotosLoading(false)
   }
@@ -158,6 +206,13 @@ export default function SuggestPage() {
   const filteredPhotoShops = photoShopSearch.trim()
     ? shops.filter(s => s.name.toLowerCase().includes(photoShopSearch.trim().toLowerCase())).slice(0, 6)
     : []
+
+  // Shown under a shop search when nothing matches.
+  const shopsMessage = shopsLoading
+    ? 'Loading shops...'
+    : shopsFailed && shops.length === 0
+      ? "Couldn't load shops. Edit your search to try again."
+      : 'No shops found.'
 
   function PhotoPicker({ photos, setPhotos, inputRef }) {
     return (
@@ -195,7 +250,10 @@ export default function SuggestPage() {
         <div className={styles.successIcon}>✓</div>
         <h2 className={styles.successTitle}>{copy.title}</h2>
         <p className={styles.successSub}>{copy.sub}</p>
-        <button className={styles.anotherBtn} onClick={() => setSuccess(false)}>{copy.btn}</button>
+        {photoWarning && (
+          <p className={styles.successWarn}>Some photos couldn't be uploaded, so your suggestion was saved without them.</p>
+        )}
+        <button className={styles.anotherBtn} onClick={() => { setSuccess(false); setPhotoWarning(false) }}>{copy.btn}</button>
       </div>
     )
   }
@@ -259,7 +317,7 @@ export default function SuggestPage() {
                 className={styles.input}
                 style={{ marginBottom: filteredShops.length > 0 ? 8 : 16 }}
                 value={shopSearch}
-                onChange={e => setShopSearch(e.target.value)}
+                onChange={e => { setShopSearch(e.target.value); if (e.target.value.trim()) ensureShopsLoaded() }}
                 placeholder="Search by shop name..."
               />
               {shopSearch.trim().length > 0 && (
@@ -273,7 +331,7 @@ export default function SuggestPage() {
                       <span>›</span>
                     </div>
                   ))}
-                  {filteredShops.length === 0 && <div className={styles.shopResultSub}>No shops found.</div>}
+                  {filteredShops.length === 0 && <div className={styles.shopResultSub}>{shopsMessage}</div>}
                 </div>
               )}
             </>
@@ -320,7 +378,7 @@ export default function SuggestPage() {
                 className={styles.input}
                 style={{ marginBottom: filteredPhotoShops.length > 0 ? 8 : 16 }}
                 value={photoShopSearch}
-                onChange={e => setPhotoShopSearch(e.target.value)}
+                onChange={e => { setPhotoShopSearch(e.target.value); if (e.target.value.trim()) ensureShopsLoaded() }}
                 placeholder="Search by shop name..."
               />
               {photoShopSearch.trim().length > 0 && (
@@ -334,7 +392,7 @@ export default function SuggestPage() {
                       <span>›</span>
                     </div>
                   ))}
-                  {filteredPhotoShops.length === 0 && <div className={styles.shopResultSub}>No shops found.</div>}
+                  {filteredPhotoShops.length === 0 && <div className={styles.shopResultSub}>{shopsMessage}</div>}
                 </div>
               )}
             </>

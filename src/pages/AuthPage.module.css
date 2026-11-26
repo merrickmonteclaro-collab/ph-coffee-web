@@ -1,23 +1,18 @@
 /* Minimal direction. Shared by the Log in, Register, Forgot password and
-   Reset password pages. Colors are scoped via --h-* variables. */
+   Reset password pages. Colors come from the global tokens in index.css. */
 .page {
-  --h-bg: #FBF8F3;
-  --h-ink: #3B2417;
-  --h-muted: #6F5F54;
-  --h-accent: #8A4B2A;
-  --h-line: #E7DDCE;
   min-height: calc(100vh - var(--tab-height));
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: var(--h-bg);
-  color: var(--h-ink);
+  background: var(--paper);
+  color: var(--ink);
   font-family: 'DM Sans', sans-serif;
 }
 .card { width: 100%; max-width: 380px; }
-.title { margin: 0 0 4px; font-size: 28px; font-weight: 700; line-height: 1.1; color: var(--h-ink); }
-.subtitle { margin: 0 0 24px; font-size: 14px; color: var(--h-muted); }
+.title { margin: 0 0 4px; font-size: 28px; font-weight: 700; line-height: 1.1; color: var(--ink); }
+.subtitle { margin: 0 0 24px; font-size: 14px; color: var(--muted); }
 .label {
   display: block;
   margin: 16px 0 6px;
@@ -25,31 +20,31 @@
   font-weight: 600;
   letter-spacing: 1px;
   text-transform: uppercase;
-  color: var(--h-muted);
+  color: var(--muted);
 }
 .input {
   width: 100%;
   height: 48px;
   box-sizing: border-box;
   padding: 0 14px;
-  border: 1px solid var(--h-line);
+  border: 1px solid var(--line);
   border-radius: 12px;
   background: transparent;
-  color: var(--h-ink);
+  color: var(--ink);
   font-family: 'DM Sans', sans-serif;
   font-size: 15px;
   outline: none;
 }
-.input:focus { border-color: var(--h-muted); }
-.input::placeholder { color: var(--h-muted); }
+.input:focus { border-color: var(--muted); }
+.input::placeholder { color: var(--muted); }
 .btn {
   width: 100%;
   height: 48px;
   margin-top: 24px;
   border: none;
   border-radius: 12px;
-  background: var(--h-accent);
-  color: #fff;
+  background: var(--accent);
+  color: var(--paper);
   font-family: 'DM Sans', sans-serif;
   font-size: 15px;
   font-weight: 700;
@@ -66,7 +61,7 @@
   padding: 0;
   border: none;
   background: none;
-  color: var(--h-accent);
+  color: var(--accent);
   font-family: 'DM Sans', sans-serif;
   font-size: 14px;
   font-weight: 500;
@@ -76,7 +71,7 @@
 }
 .toggle:hover { text-decoration: underline; }
 .error { margin-bottom: 8px; padding: 10px 14px; border-radius: 10px; background: var(--error-bg); color: var(--error-text); font-size: 13px; }
-.success { margin-bottom: 12px; padding: 10px 14px; border-radius: 10px; background: #E9EFE0; color: #3F5A26; font-size: 13px; }
+.success { margin-bottom: 12px; padding: 10px 14px; border-radius: 10px; background: var(--ok-bg); color: var(--ok); font-size: 13px; }
 /* "Show passwords" toggle on the reset page */
 .showBtn {
   min-height: 44px;
@@ -84,7 +79,7 @@
   padding: 0;
   border: none;
   background: none;
-  color: var(--h-accent);
+  color: var(--accent);
   font-family: inherit;
   font-size: 13px;
   font-weight: 600;

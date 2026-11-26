@@ -1,18 +1,12 @@
-/* Minimal direction. Colors are scoped to this page via --h-* variables. */
+/* Minimal direction. Colors come from the global tokens in index.css. */
 .container {
-  --h-bg: #FBF8F3;
-  --h-ink: #3B2417;
-  --h-muted: #6F5F54;
-  --h-accent: #8A4B2A;
-  --h-line: #E7DDCE;
-  --h-thumb: #E3D5C0;
   min-height: 100vh;
   padding: 24px 24px calc(var(--tab-height) + 24px);
-  background: var(--h-bg);
-  color: var(--h-ink);
+  background: var(--paper);
+  color: var(--ink);
   font-family: 'DM Sans', sans-serif;
 }
-.header { margin-bottom: 8px; font-size: 28px; font-weight: 700; line-height: 1.1; color: var(--h-ink); }
+.header { margin-bottom: 8px; font-size: 28px; font-weight: 700; line-height: 1.1; color: var(--ink); }
 
 .empty {
   display: flex;
@@ -20,24 +14,27 @@
   align-items: center;
   gap: 16px;
   padding: 48px 0;
-  color: var(--h-muted);
+  color: var(--muted);
   font-size: 14px;
   line-height: 1.5;
   text-align: center;
 }
-.loginLink {
+.loginLink,
+.retryBtn {
   display: inline-flex;
   align-items: center;
   height: 44px;
   padding: 0 24px;
   border-radius: 22px;
-  background: var(--h-accent);
-  color: #fff;
+  background: var(--accent);
+  color: var(--paper);
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
 }
-.loginLink:hover { opacity: 0.9; }
+.retryBtn { border: none; font-family: inherit; cursor: pointer; }
+.loginLink:hover,
+.retryBtn:hover { opacity: 0.9; }
 
 /* hairline rows, same as the Home list */
 .list { display: flex; flex-direction: column; }
@@ -48,13 +45,13 @@
   min-height: 80px;
   padding: 12px 0;
   box-sizing: border-box;
-  border-bottom: 1px solid var(--h-line);
+  border-bottom: 1px solid var(--line);
   color: inherit;
   text-decoration: none;
 }
-.card:hover .cardName { color: var(--h-accent); }
-.cardImg, .cardImgPlaceholder { width: 56px; height: 56px; border-radius: 12px; flex: none; background: var(--h-thumb); }
+.card:hover .cardName { color: var(--accent); }
+.cardImg, .cardImgPlaceholder { width: 56px; height: 56px; border-radius: 12px; flex: none; background: var(--thumb); }
 .cardImg { object-fit: cover; display: block; }
 .cardBody { flex: 1; min-width: 0; }
-.cardName { font-size: 16px; font-weight: 700; color: var(--h-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.15s; }
-.cardLocation { margin-top: 2px; font-size: 13px; color: var(--h-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cardName { font-size: 16px; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.15s; }
+.cardLocation { margin-top: 2px; font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

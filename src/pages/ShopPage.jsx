@@ -37,31 +37,45 @@ export default function ShopPage() {
   const [favoriteLoading, setFavoriteLoading] = useState(false)
 
   useEffect(() => {
+    // The route is reused when going from one shop to another, so clear the
+    // previous shop first, or its details would show while the new one loads.
+    let cancelled = false
+    setLoading(true)
+    setShop(null)
+    setPhotos([])
+    setIsVisited(false)
+    setIsFavorited(false)
+
     fetch(`${API_URL}/shops/${id}`)
       .then(r => r.json())
       .then(data => {
+        if (cancelled) return
+        // A 404 comes back as { detail: ... }, which isn't a shop.
+        if (!data || !data.id) { setLoading(false); return }
         setShop(data)
         setLoading(false)
         fetch(`${API_URL}/photos/shop/${data.id}`)
           .then(r => r.json())
-          .then(p => { if (Array.isArray(p)) setPhotos(p) })
+          .then(p => { if (!cancelled && Array.isArray(p)) setPhotos(p) })
           .catch(() => {})
         if (getToken()) {
           authFetch(`${API_URL}/visited/`)
             .then(r => r.json())
             .then(visited => {
-              if (Array.isArray(visited)) setIsVisited(visited.some(v => v.shop_id === data.id))
+              if (!cancelled && Array.isArray(visited)) setIsVisited(visited.some(v => v.shop_id === data.id))
             })
             .catch(() => {})
           authFetch(`${API_URL}/favorites/`)
             .then(r => r.json())
             .then(favorites => {
-              if (Array.isArray(favorites)) setIsFavorited(favorites.some(f => f.shop_id === data.id))
+              if (!cancelled && Array.isArray(favorites)) setIsFavorited(favorites.some(f => f.shop_id === data.id))
             })
             .catch(() => {})
         }
       })
-      .catch(() => setLoading(false))
+      .catch(() => { if (!cancelled) setLoading(false) })
+
+    return () => { cancelled = true }
   }, [id])
 
   if (loading) return <div className={styles.loading}>Loading...</div>
@@ -122,27 +136,23 @@ export default function ShopPage() {
     return hour + ':' + m.toString().padStart(2, '0') + ' ' + ampm
   }
 
+  // The button only flips once the server confirms, so it never claims
+  // something that didn't actually save.
   async function toggleVisited() {
     setVisitLoading(true)
-    if (isVisited) {
-      await authFetch(`${API_URL}/visited/${shop.id}`, { method: 'DELETE' })
-      setIsVisited(false)
-    } else {
-      await authFetch(`${API_URL}/visited/${shop.id}`, { method: 'POST' })
-      setIsVisited(true)
-    }
+    try {
+      const res = await authFetch(`${API_URL}/visited/${shop.id}`, { method: isVisited ? 'DELETE' : 'POST' })
+      if (res.ok) setIsVisited(!isVisited)
+    } catch { /* leave the button as it was */ }
     setVisitLoading(false)
   }
 
   async function toggleFavorite() {
     setFavoriteLoading(true)
-    if (isFavorited) {
-      await authFetch(`${API_URL}/favorites/${shop.id}`, { method: 'DELETE' })
-      setIsFavorited(false)
-    } else {
-      await authFetch(`${API_URL}/favorites/${shop.id}`, { method: 'POST' })
-      setIsFavorited(true)
-    }
+    try {
+      const res = await authFetch(`${API_URL}/favorites/${shop.id}`, { method: isFavorited ? 'DELETE' : 'POST' })
+      if (res.ok) setIsFavorited(!isFavorited)
+    } catch { /* leave the button as it was */ }
     setFavoriteLoading(false)
   }
 

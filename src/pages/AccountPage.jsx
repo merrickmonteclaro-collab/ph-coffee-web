@@ -26,7 +26,12 @@ export default function AccountPage() {
     setLoading(true)
     try {
       const res = await authFetch(`${API_URL}/auth/me`)
-      if (!res.ok) { removeToken(); navigate('/auth'); return }
+      if (!res.ok) {
+        // Only an expired or invalid login should sign the user out. A server
+        // hiccup (500, 503...) used to log them out too.
+        if (res.status === 401) { removeToken(); navigate('/auth'); return }
+        throw new Error('Failed to load profile')
+      }
       const data = await res.json()
       setUsername(data.username || '')
       setEmail(data.email || '')
@@ -85,7 +90,7 @@ export default function AccountPage() {
           </div>
           <div>
             <div className={styles.displayName}>{fullName || username}</div>
-            <div className={styles.joinDate}>Member since {formatDate(createdAt)}</div>
+            {createdAt && <div className={styles.joinDate}>Member since {formatDate(createdAt)}</div>}
           </div>
         </div>
 
@@ -113,7 +118,7 @@ export default function AccountPage() {
 
           {editing ? (
             <div className={styles.btnRow}>
-              <button type="button" className={styles.btnSecondary} onClick={() => { setEditing(false); loadProfile() }}>Cancel</button>
+              <button type="button" className={styles.btnSecondary} onClick={() => { setEditing(false); setSuccess(''); loadProfile() }}>Cancel</button>
               <button type="submit" className={styles.btnPrimary} disabled={saving}>{saving ? 'Saving...' : 'Save Changes'}</button>
             </div>
           ) : (

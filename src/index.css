@@ -13,6 +13,13 @@
   --shadow-sm: 0 2px 10px rgba(59, 36, 23, 0.12);
   --shadow-md: 0 4px 14px rgba(59, 36, 23, 0.14);
   --shadow-sheet: 0 -2px 20px rgba(59, 36, 23, 0.10);
+  --ok: #3F5A26;      /* "open now", success messages */
+  --ok-bg: #E9EFE0;   /* success message background */
+  --error-bg: #FFF0F0;   /* error message background */
+  --error-text: #542916; /* error message text */
+
+  /* ── Layout ── */
+  --tab-height: 64px;
 
   /* ── Legacy palette ──────────────────────────────────────
      Still used by pages that haven't been restyled yet. Many of these
@@ -31,17 +38,14 @@
   --olive-dark: #3a1a0a;
   --border: #F5E8C0;
   --white: #FFEEBC;
-  --error-bg: #FFF0F0;
-  --error-text: #542916;
-  --tab-height: 64px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
   font-family: 'DM Sans', sans-serif;
-  background: var(--bg);
-  color: var(--brown);
+  background: var(--paper);
+  color: var(--ink);
   min-height: 100vh;
   max-width: 430px;
   margin: 0 auto;
@@ -59,4 +63,4 @@ a { text-decoration: none; color: inherit; }
 /* Scrollbar */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }

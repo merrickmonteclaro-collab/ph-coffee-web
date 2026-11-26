@@ -104,7 +104,7 @@ export default function ResetPasswordPage() {
               aria-pressed={showPassword}
               className={styles.showBtn}
             >
-              {showPassword ? '🙈 Hide passwords' : '👁 Show passwords'}
+              {showPassword ? 'Hide passwords' : 'Show passwords'}
             </button>
 
             <button className={styles.btn} type="submit" disabled={loading}>
