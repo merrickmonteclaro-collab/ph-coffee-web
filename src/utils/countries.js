@@ -10,6 +10,7 @@ export const COUNTRIES = [
   { code: 'SG', label: 'Singapore', flag: '🇸🇬', center: { lat: 1.3521, lng: 103.8198 } },
   { code: 'HK', label: 'Hong Kong', flag: '🇭🇰', center: { lat: 22.3193, lng: 114.1694 } },
   { code: 'TW', label: 'Taiwan', flag: '🇹🇼', center: { lat: 23.6978, lng: 120.9605 } },
+  { code: 'JP', label: 'Japan', flag: '🇯🇵', center: { lat: 35.6762, lng: 139.6503 } },
 ]
 
 export const DEFAULT_COUNTRY = 'PH'
@@ -26,5 +27,6 @@ export function detectCountry(lat, lng) {
   if (lat >= 1.1 && lat <= 1.5 && lng >= 103.5 && lng <= 104.1) return 'SG'
   if (lat >= 22.1 && lat <= 22.6 && lng >= 113.8 && lng <= 114.5) return 'HK'
   if (lat >= 21.8 && lat <= 25.4 && lng >= 119.3 && lng <= 122.1) return 'TW'
+  if (lat >= 25 && lat <= 45 && lng >= 130 && lng <= 145) return 'JP'
   return DEFAULT_COUNTRY
 }
