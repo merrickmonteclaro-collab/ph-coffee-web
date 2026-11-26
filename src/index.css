@@ -19,25 +19,7 @@
   --error-text: #542916; /* error message text */
 
   /* ── Layout ── */
-  --tab-height: 64px;
-
-  /* ── Legacy palette ──────────────────────────────────────
-     Still used by pages that haven't been restyled yet. Many of these
-     share a value (the olive-* and brown tokens, for example), which is
-     why they're worth pruning once every page has migrated. */
-  --bg: #FFEEBC;
-  --bg-card: #FFF8E7;
-  --bg-sand: #F5E8C0;
-  --terracotta: #542916;
-  --terracotta-light: #88b8ce;
-  --terracotta-dark: #3a1a0a;
-  --brown: #542916;
-  --brown-muted: #88b8ce;
-  --olive: #542916;
-  --olive-light: #FFEEBC;
-  --olive-dark: #3a1a0a;
-  --border: #F5E8C0;
-  --white: #FFEEBC;
+  --tab-height: 64px
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
