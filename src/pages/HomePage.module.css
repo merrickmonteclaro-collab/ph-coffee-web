@@ -185,6 +185,14 @@
   flex-direction: row-reverse;
   transform: translateY(-50%);
 }
+/* Last resort: no room above, and not enough to the left on a narrow screen. */
+.bubblesDown {
+  left: 50%;
+  top: 100%;
+  margin-top: 12px;
+  flex-direction: column;
+  transform: translateX(-50%);
+}
 .bubble {
   width: 52px;
   height: 52px;
@@ -205,6 +213,7 @@
   transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s linear 0.18s;
 }
 .bubblesLeft .bubble { transform: translateX(18px) scale(0.4); }
+.bubblesDown .bubble { transform: translateY(-18px) scale(0.4); }
 .bubble:hover { border-color: var(--accent); color: var(--accent); }
 /* open: spring out one after another, nearest bubble first */
 .bubblesOpen .bubble {

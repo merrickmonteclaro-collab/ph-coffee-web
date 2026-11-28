@@ -289,10 +289,14 @@ export default function HomePage({ active = true }) {
 
   function toggleCountryPicker() {
     if (!countryPickerOpen && countryWrapRef.current && containerRef.current) {
-      const roomAbove =
-        countryWrapRef.current.getBoundingClientRect().top -
-        containerRef.current.getBoundingClientRect().top
-      setBubbleDir(roomAbove >= BUBBLE_STACK_PX ? 'up' : 'left')
+      const wrapRect = countryWrapRef.current.getBoundingClientRect()
+      const containerRect = containerRef.current.getBoundingClientRect()
+      const roomAbove = wrapRect.top - containerRect.top
+      const roomLeft = wrapRect.left - containerRect.left
+      // Rise above the button; if the sheet is pulled too high for that, fan
+      // out to the left; on a narrow screen with no room there either, drop
+      // below the button (the sheet is high, so there is plenty of room).
+      setBubbleDir(roomAbove >= BUBBLE_STACK_PX ? 'up' : roomLeft >= BUBBLE_STACK_PX ? 'left' : 'down')
     }
     setCountryPickerOpen(o => !o)
   }
@@ -526,7 +530,7 @@ export default function HomePage({ active = true }) {
               <div
                 className={[
                   styles.bubbles,
-                  bubbleDir === 'up' ? styles.bubblesUp : styles.bubblesLeft,
+                  bubbleDir === 'up' ? styles.bubblesUp : bubbleDir === 'left' ? styles.bubblesLeft : styles.bubblesDown,
                   countryPickerOpen ? styles.bubblesOpen : '',
                 ].join(' ')}
               >

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { API_URL } from '../utils/config'
 import { getToken, authFetch } from '../utils/auth'
 import AmenityIcon from '../components/AmenityIcon'
+import { getCountryInfo } from '../utils/countries'
 import styles from './ShopPage.module.css'
 
 // Inserts Cloudinary transformation params into an upload URL so the CDN
@@ -95,9 +96,11 @@ export default function ShopPage() {
     if (!shop.operating_hours) return null;
     try {
       const hours = JSON.parse(shop.operating_hours);
-      // Get Philippine time directly using UTC offset +8
+      // Work out the shop's local time from its country's UTC offset (PH, SG,
+      // HK and TW are UTC+8, Japan is UTC+9). Variable names say "ph" for
+      // historical reasons; they hold the shop's local time.
       const now = new Date();
-      const phOffset = 8 * 60; // PH is UTC+8
+      const phOffset = getCountryInfo(shop.country).utcOffset * 60;
       const utcMins = now.getUTCHours() * 60 + now.getUTCMinutes();
       const phTotalMins = utcMins + phOffset;
       const phHours = Math.floor(phTotalMins / 60) % 24;
